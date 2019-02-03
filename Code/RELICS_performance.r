@@ -1,18 +1,5 @@
 
 print('Loading packages...')
-# suppressPackageStartupMessages(require(IRanges, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(GenomicRanges, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(dplyr, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(ggplot2, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(pROC, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))  # used for AUC computation
-# suppressPackageStartupMessages(require(MESS, lib.loc = '/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))  #used for prAUC computation
-# # suppressPackageStartupMessages(require(MCMCpack))  #used for simulations. Provides dirichlet distribution
-# suppressPackageStartupMessages(require(edgeR, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(glmmTMB, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(library(DESeq2, lib.loc = '/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(require(parallel, lib.loc ='/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-# suppressPackageStartupMessages(library(optimParallel, lib.loc = '/iblm/netapp/home/pfiaux/programs/anaconda2/envs/full_R/lib/R/library'))
-
 suppressPackageStartupMessages(require(IRanges))
 suppressPackageStartupMessages(require(GenomicRanges))
 suppressPackageStartupMessages(require(dplyr))
