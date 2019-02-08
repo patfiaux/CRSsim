@@ -1212,72 +1212,6 @@ convert_to_bedgraph <- function(input.file, input.name, out.name){
 
 }
 
-# given a list of scores, create bedgraphs for each one of them
-create_bedgraphs <- function(input.score.list, input.specs){
-  score.names <- names(input.score.list)
-  nr.bg <- length(score.names)  # create unique colors for each bedgraph to plot
-  bedgraph.colors <- col2rgb(rainbow(nr.bg,s = 1, v = 1, start = 0, end =  max(1, nr.bg - 1)/nr.bg, alpha = 1))
-  for(i in 1:length(score.names)){
-    intit.temp.score.df <- input.score.list[[i]]
-    temp.score.df <- intit.temp.score.df[which(! is.na(intit.temp.score.df$start)),]
-    temp.score.name <- score.names[i]
-    print(paste0('Creating Bedgraph for: ', temp.score.name))
-    temp.bg.color <- paste(bedgraph.colors[1,i], bedgraph.colors[2,i], bedgraph.colors[3,i], sep = ',')
-    first.chrom <- temp.score.df[which(temp.score.df$chrom == temp.score.df$chrom[1]),]
-    temp.header1 <- paste0('browser position ', first.chrom$chrom[1], ':', min(first.chrom$start, na.rm = T),
-      '-', max(first.chrom$end, na.rm = T), '\n')
-    temp.header2 <- paste0("track type=bedGraph name='", input.specs$dataName, temp.score.name, "_bg' description='",
-      input.specs$dataName, temp.score.name, "_bg' visibility=full color=", temp.bg.color, '\n')
-
-    temp.score.gr <- GRanges(seqnames = temp.score.df$chrom, ranges = IRanges(temp.score.df$start, temp.score.df$end),
-      score = temp.score.df$formatScores)
-    temp.score.gr <- sortSeqlevels(temp.score.gr)
-    temp.score.gr <- sort(temp.score.gr)
-    df.temp.score <- as.data.frame(temp.score.gr)
-    df.temp.score.final <- df.temp.score[,c(1,2,3,6)]
-
-    tmp.file <- paste0(input.specs$dataName, temp.score.name, ".bedgraph")
-    cat(temp.header1, file = tmp.file)
-    cat(temp.header2, file = tmp.file, append = TRUE)
-
-    write.table(df.temp.score.final, file = tmp.file, append = TRUE, row.names = F, col.names = F, quote = F, sep = '\t')
-
-    temp.method.name <- strsplit(score.names[i],'_')[[1]]
-    if('viterbi' %in% temp.method.name | 'frwdBkwd' %in% temp.method.name | 'nbGlmm' %in% temp.method.name | 'nbGlmmDev' %in% temp.method.name){
-      tmp.peaks <- df.temp.score.final[which(df.temp.score.final[,4] > 0),]
-
-      tmp.file.peaks <- paste0(input.specs$dataName, temp.score.name, "_peaks.bedgraph")
-      temp.header2.peaks <- paste0("track type=bedGraph name='", temp.score.name, "_peaks_bg' description='",
-        temp.score.name, "_peaks_bg' visibility=full color=", temp.bg.color, '\n')
-
-      cat(temp.header1, file = tmp.file.peaks)
-      cat(temp.header2.peaks, file = tmp.file.peaks, append = TRUE)
-      write.table(tmp.peaks, file = tmp.file.peaks, append = TRUE, row.names = F, col.names = F, quote = F, sep = '\t')
-    }
-
-    # viterbi needs explicit labelling of the best hidden path
-    if('viterbi' %in% temp.method.name){
-      viterbi.file <- paste0(input.specs$dataName, temp.score.name, "_hiddenPath.bedgraph")
-      temp.header2.hidden <- paste0("track type=bedGraph name='", temp.score.name, "_hiddenPath_bg' description='",
-        temp.score.name, "_hiddenPath_bg' visibility=full color=", temp.bg.color, '\n')
-
-      cat(temp.header1, file = viterbi.file)
-      cat(temp.header2.hidden, file = viterbi.file, append = TRUE)
-      hidden.path <- rep(0, nrow(temp.score.df))
-      hidden.path[which(temp.score.df$viterbiLabels == 1)] <- 1
-      temp.viterbi.gr <- GRanges(seqnames = temp.score.df$chrom, ranges = IRanges(temp.score.df$start, temp.score.df$end),
-        score = hidden.path)
-      temp.viterbi.gr <- sortSeqlevels(temp.viterbi.gr)
-      temp.viterbi.gr <- sort(temp.viterbi.gr)
-      df.temp.viterbi <- as.data.frame(temp.viterbi.gr)
-      df.temp.viterbi.final <- df.temp.viterbi[,c(1,2,3,6)]
-
-      write.table(df.temp.viterbi.final, file = viterbi.file, append = TRUE, row.names = F, col.names = F, quote = F, sep = '\t')
-    }
-
-  }
-}
-
 score_plotting <- function(input.scores, input.specs){
 
   scores.to.plot <- input.scores
@@ -1789,32 +1723,6 @@ get_gene_Position <- function(input.specs, input.chrom, input.coords, input.gene
     gene.pos.df <- rbind(input.gene.pos, new.gene.pos)
   }
   return(gene.pos.df)
-}
-
-# save te final scores used for plotting, AUC etc.
-# input: list with scores per method, input specifications
-# output: .csv for each methods scores
-save_all_scores <- function(input.score.list, input.specs){
-  score.names <- names(input.score.list)
-  for(i in 1:length(score.names)){
-    temp.score.df <- input.score.list[[i]]
-    temp.score.name <- score.names[i]
-    method.type <- strsplit(temp.score.name, '_')[[1]]
-    method.identifier <- method.type[1]
-    if(length(method.type) > 1){
-      if(method.type[2] == 'genomeScores'){
-        out.csv <- data.frame(genomeScore = temp.score.df$formatScores, chrom = temp.score.df$chrom,
-          start = temp.score.df$start, end = temp.score.df$end, label = temp.score.df$label,
-          log2_FC = temp.score.df$log2_rate_ratio, nrSupportGuides = temp.score.df$nrSupportGuides,
-          stringsAsFactors = F)
-      } else {
-        out.csv <- data.frame(genomeScore = temp.score.df$formatScores, chrom = temp.score.df$chrom,
-          start = temp.score.df$start, end = temp.score.df$end, label = temp.score.df$label,
-          log2_FC = temp.score.df$log2_rate_ratio, stringsAsFactors = F)
-      }
-      write.csv(out.csv, file = paste(input.specs$dataName, method.identifier, method.type[2], '.csv', sep = '_'), row.names = FALSE)
-    }
-  }
 }
 
 # save te final scores used for plotting, AUC etc.
