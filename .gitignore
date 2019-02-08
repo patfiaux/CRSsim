@@ -1,2 +1,24 @@
 
 hidden_Code/RELICS_plotHeatmap.r
+Public_data/Fulco_2016/Final_data/fulco_2016_myc_chr8_info.csv
+Public_data/Fulco_2016/Final_data/Fulco_2016_MYC_exonLoc.csv
+Public_data/Fulco_2016/Final_data/fulco_gata1_2016_counts.csv
+Public_data/Fulco_2016/Final_data/fulco_gata1_2016_info.csv
+Public_data/Fulco_2016/Final_data/fulco_myc_2016_counts.csv
+Public_data/Fulco_2016/Published_results/.Rhistory
+Public_data/Fulco_2016/Published_results/Fulco_2016_allResults.csv
+Public_data/Fulco_2016/Published_results/fulco_2016_GATA1_crisperiPeaks.csv
+Public_data/Fulco_2016/Published_results/fulco_2016_GATA1_putativeEnh.csv
+Public_data/Fulco_2016/Published_results/fulco_2016_GATA1_validatedEnh.bed
+Public_data/Fulco_2016/Published_results/fulco_2016_GATA1_validatedEnh.csv
+Public_data/Fulco_2016/Published_results/fulco_2016_MYCenh.bed
+Public_data/Fulco_2016/Published_results/fulco_2016_MYCenh.csv
+Public_data/Fulco_2016/Raw_data/Fulco_2016_screening_data_S2_CSV.csv
+Simulated_data/Simulation_data.tar.gz
+hidden_Code/RELICS_plot_prAUCs.r
+hidden_Code/RELICS_publicDataAnalysis.r
+Public_data/Fulco_2016/Final_data/.Rhistory
+Public_data/Fulco_2016/Final_data/fulco_2016_gata1_chrX_counts.csv
+Public_data/Fulco_2016/Final_data/fulco_2016_gata1_chrX_info.csv
+Public_data/Fulco_2016/Final_data/Fulco_2016_GATA1_exonLoc.csv
+Public_data/Fulco_2016/Final_data/fulco_2016_myc_chr8_counts.csv
