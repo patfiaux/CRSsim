@@ -3292,7 +3292,7 @@ alphaRRA <- function(input.df, input.specs){
     start = granges.bin.info$start, end = granges.bin.info$end, stringsAsFactors = F)
 
   if(! is.null(na.df)){
-    all.na.lables <- unique(na.df[,5])
+    all.na.lables <- unique(na.df$label)
     for(lab in all.na.lables){
       lab.na.df <- na.df[na.df$label == lab,]
       na.bin.list <- rra_na_binGeneration(input.specs$rraNaBin, nrow(lab.na.df), input.specs)
@@ -6636,13 +6636,15 @@ fold_change_analysis <- function(in_counts,in_info,in_specs){
 
   out.df <- cbind.data.frame(rawScores = log10.mean.ratio, formatScores = log10.mean.ratio,
     log2_rate_ratio = log2.mean.ratio, stringsAsFactors = FALSE)
+
+  if(in_specs$foldChangePaired == 'yes'){
+    for(i in 1:ncol(log10.ratios)){
+      out.df[[paste0('repl', i, '_fc')]] <- log10.ratios[,i]
+    }
+  }
   #add the info part
   out.df <- cbind(out.df, in_info, stringsAsFactors = FALSE)
-  # if(ncol(out.df) == 7){
-  #   colnames(out.df) <- c('rawScores', 'formatScores', 'log2_rate_ratio', 'chrom', 'label', 'start', 'end')
-  # } else {
-  #   colnames(out.df) <- c('rawScores', 'formatScores', 'log2_rate_ratio', 'chrom', 'label', 'start')
-  # }
+
   return(out.df)
 }
 
