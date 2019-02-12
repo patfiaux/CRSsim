@@ -3712,7 +3712,7 @@ per_label_overlap <- function(input.bins, input.label.ranges, input.specs, input
 #   columns: chrom, label, start, end
 # output: data frame with following columns: label, chrom, start, end
 info_to_label <- function(input.info){
-  out.df <- cbind.data.frame(label = input.info[,2], chrom = input.info[,1], start = input.info[,3], end = input.info[,4], stringsAsFactors = FALSE)
+  out.df <- cbind.data.frame(label = input.info$label, chrom = input.info$chrom, start = input.info$start, end = input.info$end, stringsAsFactors = FALSE)
   return(out.df)
 }
 
