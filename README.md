@@ -12,5 +12,6 @@ The simulations mirror the experimental steps by taking the following variables 
 | Load sorter with cells* | Specify number of cells to sort |
 | Sort cells | Specify sorting probabilities for sorting using Dirichlet-Multinomial |
 
-* If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
+\* If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
+
 ** dropout rate
