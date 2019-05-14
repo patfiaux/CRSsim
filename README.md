@@ -11,4 +11,4 @@ The simulations mirror the experimental steps by taking the following variables 
 | Transduction of cells with guide library | Generate guide distribution |
 | Load sorter with cells* | Specify number of cells to sort |
 
-* If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
+ * If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
