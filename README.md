@@ -7,4 +7,8 @@ The simulations mirror the experimental steps by taking the following variables 
 | ----------------- | -------------- |
 | NA | Size and number of enhancers|
 | NA | Strength of enhancer |
+| NA | Guide efficiency |
+| Transduction of cells with guide library | Generate guide distribution |
+| Load sorter with cells* | Specify number of cells to sort |
 
+* If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
