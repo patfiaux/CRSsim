@@ -3892,7 +3892,7 @@ score_calculation <- function(input.counts, input.info, input.specs){
     out.list$nbGlmm <- nb_tmb_glmm_analysis(input.counts, input.info, input.specs)
     print('Finished NB-GLMM analysis')
   }
-  if('RELICS-search' %in% input.specs$Method){
+  if('RELICS-search' %in% input.specs$Method | 'RELICS' %in% input.specs$Method){
     print('#####################################')
     print('Running RELICS-search ')
     out.list$RELICS <- RELICS_search(input.counts, input.info, input.specs)
