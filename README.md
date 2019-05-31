@@ -19,15 +19,29 @@ The simulations mirror the experimental steps by taking the following variables 
 
 ** dropout rate
 
-## 1.1 Installations and Setup
+## 1.1 Installations and Setup for Simulations
 The simulations are done in R [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
 
 Download source code to your desired location: `git clone https://github.com/patfiaux/RELICS.git`
 
-To run RELCIS you need the packages below. If you don't have them, install them using the command after the '#'):
+To simulate data you need the packages below. If you don't have them, install them using the command after the '#'):
 ### R packages
 ```
-MCMCpack # 
+MCMCpack # install.packages('MCMCpack')
+
+transport # install.packages('transport')
+
+```
+
+### Bioconductor packages
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+
+    install.packages("BiocManager")
+    
+IRanges # BiocManager::install("IRanges", version = "3.8")
+
+GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
 
