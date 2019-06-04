@@ -109,9 +109,13 @@ sim.flags$pcrDupl <- 'yes'
 ```
 
 Specify:
+
     - the selection strength, how strong the effect of disrupting the gene of interest is (high, low). 
+    
     - the guide efficiency, what proportion of guides have an effect (high, medium, low)
+    
     - the enhancer strength, how strong the signal from the enhancers is (high, medium, low)
+    
     
 The parameters for all of these can also be manually set. See the 'Advanced Simulations' section for details.
 ```
