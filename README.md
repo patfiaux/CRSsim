@@ -44,6 +44,55 @@ IRanges # BiocManager::install("IRanges", version = "3.8")
 GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
+## Simulation quickstart with example data
+### 1. source the script
+```
+source('/path/to/script/RELICS_sim.r')
+```
 
+### 2. Setting up simulation flags. 
+There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
 
+Flags are set up in a list format
 
+```
+sim.flags <- list()
+```
+
+Set the output name of the simulation
+```
+sim.flags$simName <- 'Example_simulation'
+```
+
+Provide info about the guide targets. Either supply them directly, as is done here, or generate them (see details 'Advanced Simulations')
+```
+sim.flags$guides <- example.info
+```
+
+Provide the original guide distribution for each replicate. This can be supplied from an existing data set, as is done below. Another option is to generate the distributions using a zero inflated negative binomial distribution. See 'Advanced Simulations' for details.
+```
+sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
+  before_2 = example.counts$before_repl2)
+```  
+
+```
+sim.flags$poolNames <- c('before', 'after')
+sim.flags$exon <- example.gene
+sim.flags$nrEnhancers <- 5
+sim.flags$enhancerSize <- 50  # base pairs
+
+sim.flags$crisprSystem <- 'CRISPRi'
+
+sim.flags$seqDepth <- list(repl1 = c(16656607, 19431422),
+    repl2 = c(20217155, 21585515))
+sim.flags$pcrDupl <- 'duplicate'  # keep PCR duplicates in this case to reproduce the shape of Fulco's distribution
+
+sim.flags$guideEfficiency <- 'high'
+sim.flags$enhancerStrenth <- 'high'
+
+sim.flags$selectionScreen <- 'yes'
+sim.flags$selectionStrength <- 'high'
+simulate_data(sim.flags)
+```
+
+## Advanced simulations
