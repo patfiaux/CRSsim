@@ -129,7 +129,29 @@ Run the simulations
 simulate_data(sim.flags)
 ```
 
+## FACS screen simulation quickstart with example data
+Outlined below are the main differences to the flags set above
+
+Instead of a selection screen, the FACS screen flag is set.
+```
+sim.flags$FACSscreen <- 'yes'
+```
+
+As above, each pool per replicate has to be names. However, in this case there will be more than one pool. Here an example where wells are sorted form an input pool into a high, medium and low expression pool.
+```
+sim.flags$poolNames <- c('input', 'high', 'medium', 'low')
+```
+
+The sequencing depth has to be specified for each of the four pools for each of the replicates.
+```
+sim.flags$seqDepth <- list(repl1 = rep(18e6, 4), repl2 = rep(18e6, 4) )
+```
+
+
 ## Advanced Simulations
 
+```
+sim.flags$guides <- example.info
+```
 
 and CRISPRa it is assumed that the area of effect is 1kb. For Cas9 it is assumed to be 20bp and for a dualCRISPR system the sange is specified already by the start and , however this can be changed
