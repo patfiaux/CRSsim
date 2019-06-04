@@ -44,7 +44,7 @@ IRanges # BiocManager::install("IRanges", version = "3.8")
 GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
-## Simulation quickstart with example data
+## Simulation quickstart with example data (Selection screen)
 ### 1. source the script
 ```
 source('/path/to/script/RELICS_sim.r')
@@ -69,30 +69,63 @@ Provide info about the guide targets. Either supply them directly, as is done he
 sim.flags$guides <- example.info
 ```
 
+If guide targets are provided then the gene of interest should also be provided. The assumption is that guides are also targeting the gene of interest and can serve as positive controls.
+```
+sim.flags$exon <- example.gene
+```
+
 Provide the original guide distribution for each replicate. This can be supplied from an existing data set, as is done below. Another option is to generate the distributions using a zero inflated negative binomial distribution. See 'Advanced Simulations' for details.
 ```
 sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
   before_2 = example.counts$before_repl2)
 ```  
 
+Specify the screen type. Either a selection screen like here or a FACSscreen, where cells are sorted into different pools. See 'FACS screen simulation' section for an example simulation of a FACS screen.
+```
+sim.flags$selectionScreen <- 'yes'
+```
+
+Add names for the different pools in each replicate. In this case each replicate will have a before selection and after selection pool. The names will be before_repl1, after_repl1, before_repl2, ...
 ```
 sim.flags$poolNames <- c('before', 'after')
-sim.flags$exon <- example.gene
+```
+
+Sepcify the crispry system used. For CRISPRi the default range of effect is assumed to be 1kb. However this can be changed. See the 'Advanced Simulations' section for more details and how to simulate other CRISPR systems.
+```
+sim.flags$crisprSystem <- 'CRISPRi'
+```
+
+Specify the number and the size of enhancers to be simulated. They will be placed at random positions within the screen.
+```
 sim.flags$nrEnhancers <- 5
 sim.flags$enhancerSize <- 50  # base pairs
+```
 
-sim.flags$crisprSystem <- 'CRISPRi'
-
+Specify the sequencing depth for each of the pools. In addition, the simulations can simulate data sets where PCR duplicates are either accounted for or not. If they are accounted for set the 'pcrDupl' flag to 'no'.
+```
 sim.flags$seqDepth <- list(repl1 = c(16656607, 19431422),
     repl2 = c(20217155, 21585515))
-sim.flags$pcrDupl <- 'duplicate'  # keep PCR duplicates in this case to reproduce the shape of Fulco's distribution
+sim.flags$pcrDupl <- 'yes'
+```
 
+Specify:
+    - the selection strength, how strong the effect of disrupting the gene of interest is (high, low). 
+    - the guide efficiency, what proportion of guides have an effect (high, medium, low)
+    - the enhancer strength, how strong the signal from the enhancers is (high, medium, low)
+    
+The parameters for all of these can also be manually set. See the 'Advanced Simulations' section for details.
+```
+sim.flags$selectionStrength <- 'high'
 sim.flags$guideEfficiency <- 'high'
 sim.flags$enhancerStrenth <- 'high'
+```
 
-sim.flags$selectionScreen <- 'yes'
-sim.flags$selectionStrength <- 'high'
+Run the simulations
+```
 simulate_data(sim.flags)
 ```
 
-## Advanced simulations
+## Advanced Simulations
+
+
+and CRISPRa it is assumed that the area of effect is 1kb. For Cas9 it is assumed to be 20bp and for a dualCRISPR system the sange is specified already by the start and , however this can be changed
