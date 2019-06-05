@@ -1,0 +1,12 @@
+dataName:testSim8_3pools_med_run
+CountFileLoc:testSim8_3pools_med_sim1_counts.csv
+sgRNAInfoFileLoc:testSim8_3pools_med_sim1_info.csv
+repl_groups:1,2,3;4,5,6
+glmm_positiveTraining:exon
+glmm_negativeTraining:neg
+Method:RELICS-search,FoldChange
+crisprSystem:CRISPRi
+crisprEffectRange:1000
+foldChangePaired:yes
+Group1:3,6
+Group2:2,5

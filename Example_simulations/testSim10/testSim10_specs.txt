@@ -1,0 +1,12 @@
+dataName:testSim10
+CountFileLoc:testSim10_sim1_counts.csv
+sgRNAInfoFileLoc:testSim10_sim1_info.csv
+repl_groups:1,2;3,4
+glmm_positiveTraining:exon
+glmm_negativeTraining:neg
+Method:RELICS-search,FoldChange
+crisprSystem:CRISPRi
+crisprEffectRange:1000
+foldChangePaired:yes
+Group1:1,3
+Group2:2,4

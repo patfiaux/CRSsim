@@ -37,7 +37,7 @@ sequence_pool <- function(input.counts, pcr.type, input.seq.depth, guide.nr){
   temp.obs <- rep(c(1:length(input.counts)), input.counts)  # guide id the number of times a guide is present
     # 1,1,1,2,3,3,3,3,4,4,5,5,5,...
 
-  if(pcr.type == 'duplicate'){
+  if(pcr.type == 'duplicate' | pcr.type == 'yes'){
     temp.sequenced <- table(sample(temp.obs, input.seq.depth, replace=TRUE))
   } else {
     if(length(temp.obs) < input.seq.depth){
@@ -81,12 +81,19 @@ set_default_flags <- function(input.list){
     # in case the correlation between replicates is to be broken
     out.list$randomizeRepl <- 'no'
   }
+  if(nrow(out.list$inputGuideDistr) != nrow(out.list$guides)){
+    if(nrow(out.list$inputGuideDistr) >= nrow(out.list$guides)){
+      out.list$inputGuideDistr <- out.list$inputGuideDistr[sample(1:nrow(out.list$inputGuideDistr), size = nrow(out.list$guides)),]
+    } else {
+      out.list$inputGuideDistr <- out.list$inputGuideDistr[sample(1:nrow(out.list$inputGuideDistr), size = nrow(out.list$guides), replace = T),]
+    }
+  }
   if(! 'crisprEffectRange' %in% input.list.names){
     if(out.list$crisprSystem == 'CRISPRi' | out.list$crisprSystem == 'CRISPRa'){
       out.list$crisprEffectRange <- 1000
     } else if(out.list$crisprSystem == 'Cas9'){
       out.list$crisprEffectRange <- 20
-    } else if(out.listout.list$crisprSystem == 'dualCRISPR'){
+    } else if(out.list$crisprSystem == 'dualCRISPR'){
       out.list$crisprEffectRange <- 0
     } else {
       print('Error: please specify a valid CRISPR system (Cas9, CRISPRi, CRISPRa, dualCRISPR)')
@@ -177,11 +184,11 @@ set_default_flags <- function(input.list){
     } else {
       if('selectionStrength' %in% input.list.names){
         if(out.list$selectionStrength == 'high'){
-          out.list$posSortingFrequency <- c(rep(97, (nrow(out.list$seqDepth) - 1) ), 13)*0.5
-          out.list$negSortingFrequency <- c(rep(97, (nrow(out.list$seqDepth) - 1) ), 3)*0.5
-        } else if(out.list$selectionStrength == 'high'){
-          out.list$posSortingFrequency <- c(rep(97, (nrow(out.list$seqDepth) - 1) ), 5)*0.5
-          out.list$negSortingFrequency <- c(rep(97, (nrow(out.list$seqDepth) - 1) ), 3)*0.5
+          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
+          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+        } else if(out.list$selectionStrength == 'low'){
+          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 5)*0.5
+          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
         } else {
           print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
         }
@@ -190,8 +197,16 @@ set_default_flags <- function(input.list){
       }
     }
   }
+  if(! 'exon' %in% input.list.names){
+    max.dist <- max(input.list$guides$end) - min(input.list$guides$start)
+    gene.start <-  min(input.list$guides$start) + round(max.dist/ 2)
+    gene.end <- round(gene.start + 0.05 * max.dist)
+    gene.exons <- data.frame(chrom = input.list$guides$chrom[1], start = gene.start,
+      end = gene.end, stringsAsFactors = F)
+    out.list$exon <- gene.exons
+  }
 
-  if(! 'selectionScreen' %in% names(out.list) | 'FACSscreen' %in% names(out.list)){
+  if(! ('selectionScreen' %in% names(out.list) | 'FACSscreen' %in% names(out.list)) ){
     print('No info about screen type. Pick either selectionScreen or FACSscreen')
     break()
   }
@@ -214,6 +229,25 @@ set_default_flags <- function(input.list){
   }
 
   return(out.list)
+}
+
+generate_guide_info <- function(input.list){
+
+  guide.chrom <- rep('chr1', input.list$nrGuides)
+  guide.start <- c()
+  guide.end <- c()
+  if(input.list$screenType == 'dualCRISPR'){
+    guide.start <- 2000 + c(1:input.list$nrGuides) * input.list$stepSize
+    guide.end <- guide.start + input.list$deletionSize
+  } else {
+    guide.start <- 2000 + c(1:input.list$nrGuides) * input.list$stepSize - 10
+    guide.end <- guide.start + 20
+  }
+
+  out.df <- data.frame(chrom = guide.chrom, start = guide.start, end = guide.end, stringsAsFactors = F)
+
+  return(out.df)
+
 }
 
 simulate_data <- function(input.list){
@@ -266,7 +300,13 @@ simulate_data <- function(input.list){
     enh.label.pos <- sim_enhancer_overlaps(updated.info, ordered.enhancers)
     final.info$label[enh.label.pos] <- 'pos'
     random.neg <- sample(which(final.info$label == 'chr'), input.list$nrNeg)
-    final.info[random.neg, c(1:4)] <- data.frame(NA, NA, NA, 'neg', stringsAsFactors = F)
+    for(i in 1:length(random.neg)){
+      final.info$chrom[random.neg[i]] <- NA
+      final.info$start[random.neg[i]] <- NA
+      final.info$end[random.neg[i]] <- NA
+      final.info$label[random.neg[i]] <- 'neg'
+    }
+    # final.info[random.neg, c(1:4)] <- data.frame(NA, NA, NA, 'neg', stringsAsFactors = F)
     write.csv(final.info, file = paste0(input.list$outDir, input.list$simName,'/',
       input.list$simName, '_sim', sim, '_info.csv'), row.names = F)
   }
