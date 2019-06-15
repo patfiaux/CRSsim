@@ -427,7 +427,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
 
       temp.exon.sort.prob <- c()
 
-      # since dealing with exons, there is no guide efficiency
+      # since dealing with exons, there is no enhancer efficiency
       # for each guide, the efficient guide gets sorted according to exon efficiency
       # the remaining guides get sorted according to negative sorting frequencies
       for(g in 1:length(unique.guide.overlaps)){
