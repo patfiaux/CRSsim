@@ -3,6 +3,10 @@ This github account contains code and instructions for simulating CRISPR regulat
 
 [Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#1-simulating-crispr-regulatory-screen-data)
 
+[Analysis and performance](https://github.com/patfiaux/CRSsim/blob/master/README.md#2-analyzing-simulated-data-and-evaluate-performance)
+
+[Advanced Flags](https://github.com/patfiaux/CRSsim/blob/master/README.md#3-advanced-flags)
+
 # 1. Simulating CRISPR regulatory screen data
 The simulations mirror the experimental steps by taking the following variables into account:
 
@@ -155,6 +159,7 @@ An average guide count of 15 vs 100 vs 500 has a major effect on detecting true 
 
 # 2. Analyzing simulated data and evaluate performance
 
+# 3. Advanced Flags
 
 ## 3. Advanced Simulations
 
