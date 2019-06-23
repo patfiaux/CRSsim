@@ -1,5 +1,11 @@
-# RELICS-performance
-This github account contains code and instructions for simulating CRISPR regulatory screens and assessing performance of different methods used in CRISPR regulatory screens
+# CRSsim
+This github account contains code and instructions for simulating CRISPR regulatory screens and assessing performance of different methods used in CRISPR regulatory screens. It contains the following sections:
+
+[Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#1-simulating-crispr-regulatory-screen-data)
+
+[Analysis and performance](https://github.com/patfiaux/CRSsim/blob/master/README.md#2-analyzing-simulated-data-and-evaluate-performance)
+
+[Advanced Flags](https://github.com/patfiaux/CRSsim/blob/master/README.md#3-advanced-flags)
 
 # 1. Simulating CRISPR regulatory screen data
 The simulations mirror the experimental steps by taking the following variables into account:
@@ -22,10 +28,10 @@ The simulations mirror the experimental steps by taking the following variables 
 ## 1.1 Installations and Setup for Simulations
 The simulations are done in R [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
 
-Download source code to your desired location: `git clone https://github.com/patfiaux/RELICS.git`
+Download source code to your desired location: `https://github.com/patfiaux/CRSsim.git`
 
 To simulate data you need the packages below. If you don't have them, install them using the command after the '#'):
-### R packages
+### 1.1.1 R packages
 ```
 MCMCpack # install.packages('MCMCpack')
 
@@ -33,7 +39,7 @@ transport # install.packages('transport')
 
 ```
 
-### Bioconductor packages
+### 1.1.2 Bioconductor packages
 ```
 if (!requireNamespace("BiocManager", quietly = TRUE))
 
@@ -44,13 +50,13 @@ IRanges # BiocManager::install("IRanges", version = "3.8")
 GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
-## Simulation quickstart with example data (Selection screen)
-### 1. source the script
+## 1.2 Simulation quickstart with example data (Selection screen)
+### 1.2.1. source the script
 ```
 source('/path/to/script/RELICS_sim.r')
 ```
 
-### 2. Setting up simulation flags. 
+### 1.2.2. Setting up simulation flags. 
 There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
 
 Flags are set up in a list format
@@ -129,7 +135,7 @@ Run the simulations
 simulate_data(sim.flags)
 ```
 
-## FACS screen simulation quickstart with example data
+## 1.2.3 FACS screen simulation quickstart with example data
 Outlined below are the main differences to the flags set above
 
 Instead of a selection screen, the FACS screen flag is set.
@@ -150,7 +156,54 @@ sim.flags$seqDepth <- list(repl1 = rep(18e6, 4), repl2 = rep(18e6, 4) )
 ## Keep in mind!
 An average guide count of 15 vs 100 vs 500 has a major effect on detecting true signal when everything else is held constant. Make sure you adjust (seqDepth) when changing the number of guides used for simulating the data.
 
-## Advanced Simulations
+
+# 2. Analyzing simulated data and evaluate performance
+
+## 2.1 Installations and Setup for Analysis and performance evaluation
+
+To analyze data and evaluate method performance you need the packages below. If you don't have them, install them using the command after the '#'):
+### 2.1.1 R packages
+```
+dplyr # install.packages('dplyr')
+
+ggplot2 # install.packages('ggplot2')
+
+pROC # install.packages('pROC')
+
+glmmTMB # install.packages('glmmTMB')
+
+extraDistr # install.packages('extraDistr')
+
+MESS # install.packages('MESS')
+
+```
+
+### 2.1.2 Bioconductor packages
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+
+    install.packages("BiocManager")
+    
+IRanges # BiocManager::install("IRanges", version = "3.8")
+
+GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
+
+edgeR # BiocManager::install("edgeR")
+
+DESeq2 # BiocManager::install("DESeq2")
+```
+
+## 2.2 Quickstart with example data (Selection screen)
+### 2.2.1. source the script
+```
+source('/path/to/script/RELICS_sim.r')
+```
+
+
+
+# 3. Advanced Flags
+
+## 3. Advanced Simulations
 
 Guides and their targets can be simulated if not readily available. Both single-guide as well as dual guide screens can be simulated. For both types the number of guides (nrGuides) have to be specified, as well as the screen type (screenType) and the step size between guides (stepSize). In addition to that, if a dual CRISPR screen is chosen, the deletion size has to be specified (stepSize).
 
