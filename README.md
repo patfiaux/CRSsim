@@ -28,7 +28,7 @@ The simulations mirror the experimental steps by taking the following variables 
 ## 1.1 Installations and Setup for Simulations
 The simulations are done in R [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
 
-Download source code to your desired location: `git clone https://github.com/patfiaux/RELICS.git`
+Download source code to your desired location: `https://github.com/patfiaux/CRSsim.git`
 
 To simulate data you need the packages below. If you don't have them, install them using the command after the '#'):
 ### 1.1.1 R packages
@@ -158,6 +158,48 @@ An average guide count of 15 vs 100 vs 500 has a major effect on detecting true 
 
 
 # 2. Analyzing simulated data and evaluate performance
+
+## 2.1 Installations and Setup for Analysis and performance evaluation
+
+To analyze data and evaluate method performance you need the packages below. If you don't have them, install them using the command after the '#'):
+### 2.1.1 R packages
+```
+dplyr # install.packages('dplyr')
+
+ggplot2 # install.packages('ggplot2')
+
+pROC # install.packages('pROC')
+
+glmmTMB # install.packages('glmmTMB')
+
+extraDistr # install.packages('extraDistr')
+
+MESS # install.packages('MESS')
+
+```
+
+### 2.1.2 Bioconductor packages
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+
+    install.packages("BiocManager")
+    
+IRanges # BiocManager::install("IRanges", version = "3.8")
+
+GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
+
+edgeR # BiocManager::install("edgeR")
+
+DESeq2 # BiocManager::install("DESeq2")
+```
+
+## 2.2 Quickstart with example data (Selection screen)
+### 2.2.1. source the script
+```
+source('/path/to/script/RELICS_sim.r')
+```
+
+
 
 # 3. Advanced Flags
 
