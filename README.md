@@ -215,23 +215,36 @@ analysis.specs$dataName <- 'Type_3_exampleSim'
 Give location of count and info files (easiest if in working directory but can also give a path to files)
 
 ```
-analysis.specs$CountFileLoc <- 'Type_3_simulated_counts.csv'
-analysis.specs$sgRNAInfoFileLoc <- 'Type_3_simulated_info.csv'
+analysis.specs$CountFileLoc <- 'Example_selectionScreen_counts.csv'
+analysis.specs$sgRNAInfoFileLoc <- 'Example_selectionScreen_info.csv'
 ```
 
 Multiple analysis methods can be compared: RELICS, fold change, edgeR and DESeq2. 
 
-For RELICS, see analysis instruction details here ()
+For RELICS, see analysis instruction details [here](https://github.com/patfiaux/RELICS/blob/master/README.md#quickstart-with-example-data).
 ```
-analysis.specs$repl_groups <- '1,2,3,4;5,6,7,8'
+analysis.specs$repl_groups <- '1,2;3,4'
 analysis.specs$glmm_positiveTraining <- 'exon'
 analysis.specs$glmm_negativeTraining <- 'neg' 
 ```
 
-For edgeR and 
+For edgeR and DESeq2 and fold change, select the pools which are compared against one another. Pools are referenced by their column-occurance in the count file
+```
+analysis.specs$Group1 <- c(1,3)
+analysis.specs$Group2 <- c(2,4)
+```
 
 ```
-analysis.specs$Method <- 'RELICS-search'
+analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
+```
+
+Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
+```
+analysis.specs$simulated_data <- 'yes' # specify that the analysis is based on simulated data where the ground thruth is known
+analysis.specs$pos_regions <- 'Example_gene.csv' # file location of all known positive regions
+analysis.specs$evaluate_perElement_Performance <- 'yes' # specify that the performance of different methods is to be evaluated
+analysis.specs$positiveLabels <- 'pos' # label for regions which are true positives
+analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are true negatives
 ```
 
 ```
