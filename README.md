@@ -1,6 +1,7 @@
 # CRSsim
 This github account contains code and instructions for simulating CRISPR regulatory screens and assessing performance of different methods used in CRISPR regulatory screens. It contains the following sections:
-[Simulations](1-Simulating-CRISPR-regulatory-screen-data)
+
+[Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#1-simulating-crispr-regulatory-screen-data)
 
 # 1. Simulating CRISPR regulatory screen data
 The simulations mirror the experimental steps by taking the following variables into account:
