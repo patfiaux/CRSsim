@@ -51,7 +51,8 @@ GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
 ## 1.2 Simulation quickstart with example data (Selection screen)
-### 1.2.1. source the script
+### 1.2.1. Source the script
+We recommend you move into the provided, empty, directory 'Example_simulations' to generate all files in there.
 ```
 source('/path/to/script/CRSsim.r')
 ```
@@ -197,7 +198,9 @@ DESeq2 # BiocManager::install("DESeq2")
 
 ## 2.2 Quickstart with example data (Selection screen)
 
-I recommend moving the empty performance evaluation folder we have provided to you and source the performance evaluation script.
+We recommend moving into the empty performance evaluation folder we have provided ('Example_performanceEval') to generate all files within there.
+
+Source the performance evaluation script.
 ```
 source('/path/to/script/RELICS_performance.r')
 ```
