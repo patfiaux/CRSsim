@@ -86,7 +86,7 @@ sim.flags <- list()
 sim.flags$simName <- 'Example_simulation'
 ```
 
-* Provide information about the guide targets. Either supply them directly, as is done here, or generate them (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#3-advanced-simulations). The input is a data frame with columns for chromosome, start position and end position: 'chrom', 'start', 'end'. Each row is a guide and details the target information for each guide. For Cas9, CRISPRi and CRISPRa screens, the difference in start and end should be set to something small, such as: start = target site - 20, end = target site.
+* Provide information about the guide targets. Either supply them directly, as is done here, or generate them (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). The input is a data frame with columns for chromosome, start position and end position: 'chrom', 'start', 'end'. Each row is a guide and details the target information for each guide. For Cas9, CRISPRi and CRISPRa screens, the difference in start and end should be set to something small, such as: start = target site - 20, end = target site.
 ```r
 sim.flags$guides <- read.csv('../Example_data/Example_selectionScreen_info.csv', stringsAsFactors = F)
 ```
