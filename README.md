@@ -65,22 +65,25 @@ The output will consist of three .csv files with the following information:
 3. Locations of the simulated regulatory regions
 
 ### 1.2.1. Source the script
-We recommend that you navigate into the `<Example_simulations>` directory (included in the repository) and generate all output files there. After navigating into that directory, run the following command in order to access all the functions called by the simulation:
+We recommend that you navigate into the `Example_simulations` directory (included in the repository) and generate all output files there. After navigating into that directory, run the following command in order to access all the functions called by the simulation:
 ``` r
 source('/path/to/script/CRSsim.r')
 ```
 
-### 1.2.2. Setting up simulation flags. 
-Running a simulation will generate a count file (containing all counts for each of the guides) a info file (containing information about the target location of the guide) and an enhancer file (containing the locations of each enhancer). We have set up an empty file for you (Example_simulations) within which you can generate these files. Move into this directory and begin setting the flags. There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
+### 1.2.2. Setting up simulation flags
+Running a simulation will generate:
+* a count file, containing counts for each of the guides,
+* an annotation file, containing information about the location of each guide's target site, and 
+* an enhancer file, containing the locations of each enhancer
 
-Flags are set up in a list format
+We have created an empty file for you (`Example_simulations`), within which you can generate these output files. Navigate into this directory and begin setting the option flags. There are several different flags which have no default arguments and must be supplied by the user. Below is an outline on how to set the most important flags to get the simulation going.
 
-```
+Flags are set up as an `R` list
+``` r
 sim.flags <- list()
 ```
-
-Set the output name of the simulation
-```
+Set the output name for the simulation
+``` r
 sim.flags$simName <- 'Example_simulation'
 ```
 
