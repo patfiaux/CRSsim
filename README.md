@@ -217,7 +217,7 @@ Set the output name of the analysis (and chose a different name from the existin
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
 
-Give location of count and info files. Check the [RELICS repo]((https://github.com/patfiaux/RELICS) for file formats.
+Give location of count and info files. Check the [RELICS repo](https://github.com/patfiaux/RELICS) for file formats.
 
 ```
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
@@ -225,8 +225,11 @@ analysis.specs$sgRNAInfoFileLoc <- '../Example_data/Example_simulation_info.csv'
 ```
 
 Multiple analysis methods can be compared: RELICS, fold change, edgeR and DESeq2. 
+```
+analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
+```
 
-To run RELICS it is necessay to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE the performance script
+To run RELICS it is necessay to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE the performance script.
 ```
 source('/path/to/script/RELICS.r')
 source('/path/to/script/RELICS_performance.r')
@@ -239,7 +242,7 @@ analysis.specs$glmm_positiveTraining <- 'exon'
 analysis.specs$glmm_negativeTraining <- 'neg' 
 ```
 
-For edgeR and DESeq2 and fold change, select the pools which are compared against one another. Pools are referenced by their column-occurance in the count file
+For edgeR and DESeq2 and fold change, select the pools which are compared against one another. Pools are referenced by their column-occurance in the count file.
 ```
 analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
@@ -248,10 +251,6 @@ analysis.specs$Group2 <- c(2,4)
 For fold change specifically, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondance) or if there is an inbalance between the groups
 ```
 analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
-```
-
-```
-analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
 ```
 
 Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
