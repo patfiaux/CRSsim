@@ -665,11 +665,11 @@ performanceEvaluation_perElement_recording <- function(input.score.list, input.s
   plot_methodEval(methd.auc,'perElement_AUCeval',input.specs$dataName,'bottomright','Fraction True negative included','Fraction True positives included')
   plot_methodEval(methd.prAuc,'perElement_prAUCeval',input.specs$dataName,'bottomleft','Recall','Precision')
 
-  out.df <- cbind.data.frame(pre_bin_type, pre_bin_size, pre_bin_step, pre_bin_methd,
-    post_bin_methd, post_bin_size, Method, AUC, prAUC, stringsAsFactors = FALSE)
-  write.table(out.df, file = 'perElement_method_eval.csv', sep = ',', row.names = FALSE, col.names = FALSE)
+  # out.df <- cbind.data.frame(pre_bin_type, pre_bin_size, pre_bin_step, pre_bin_methd,
+  #   post_bin_methd, post_bin_size, Method, AUC, prAUC, stringsAsFactors = FALSE)
+  # write.table(out.df, file = 'perElement_method_eval.csv', sep = ',', row.names = FALSE, col.names = FALSE)
 
-  return(cbind.data.frame(Method, prAUC, stringsAsFactors = F))
+  return(cbind.data.frame(Method = Method, AUC = AUC, prAUC =  prAUC, stringsAsFactors = F))
 
 }
 
@@ -1081,6 +1081,14 @@ analyze_data <- function(spec.file = NULL, label.file = NULL, data.dir = NULL){
   if('evaluate_perRegion_Performance' %in% analysis.specs.names){
     # print('Evaluate per region performance ...')
     region.prAUC <- performanceEvaluation_perRegion_recording(final.score.list, analysis.specs)
+  }
+
+  if('evaluate_perElement_Performance' %in% analysis.specs.names){
+    # print('Evaluate per region performance ...')
+    element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
+    write.csv(element.prAUC, file = paste0(analysis.specs$dataName, '_perElement_method_eval.csv'), row.names = F )
+    # element.prAUC.sim <- cbind(element.prAUC, rep(paste0('sim',sim), nrow(element.prAUC)))
+    # combined.element.prAUC <- rbind(combined.element.prAUC, element.prAUC.sim)
   }
 
   if('postScoringAnalysis' %in% analysis.specs.names){
@@ -2119,6 +2127,7 @@ calculate_scores <- function(analysis.specs, label.file = NULL){
 #   for more description see: score_calculation
 post_score_calculation <- function(input.list, input.specs){
   if('postScoringAnalysis' %in% names(input.specs)){
+    print('Aggregating guide scores')
     out.list <- list()
     if('postScoringMAGeCK' %in% names(input.specs)){
       pSM.path <- input.specs$MAGeCKrra
