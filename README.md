@@ -297,7 +297,7 @@ analyze_data('Example_performanceEval_specs.txt')
 
 # 3. Advanced Flags
 
-## 3. Advanced Simulations
+## 3.1 Advanced Simulations
 
 Guides and their targets can be simulated if not readily available. Both single-guide as well as dual guide screens can be simulated. For both types the number of guides (nrGuides) have to be specified, as well as the screen type (screenType) and the step size between guides (stepSize). In addition, if a dual CRISPR screen is chosen, the deletion size has to be specified (stepSize).
 
