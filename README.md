@@ -180,34 +180,56 @@ Running the analysis will provide you with the per-guide score files as well as 
 
 To analyze data and evaluate method performance you need the packages below. If you don't have them, install them using the command after the '#'):
 ### 2.1.1 R packages
+* dplyr
+```r
+install.packages('dplyr')
 ```
-dplyr # install.packages('dplyr')
-
-ggplot2 # install.packages('ggplot2')
-
-pROC # install.packages('pROC')
-
-glmmTMB # install.packages('glmmTMB')
-
-extraDistr # install.packages('extraDistr')
-
-MESS # install.packages('MESS')
-
+* ggplot2
+```r
+install.packages('ggplot2')
+```
+* pROC
+```r
+install.packages('pROC')
+```
+* glmmTMB
+```r
+install.packages('glmmTMB')
+```
+* extraDistr
+```r
+install.packages('extraDistr')
+```
+* MESS
+```r
+install.packages('MESS')
 ```
 
 ### 2.1.2 Bioconductor packages
-```
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
 
     install.packages("BiocManager")
-    
-IRanges # BiocManager::install("IRanges", version = "3.8")
+```
 
-GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
+* IRanges
+```r
+BiocManager::install("IRanges", version = "3.8")
+```
 
-edgeR # BiocManager::install("edgeR")
+* GenomicRanges
+```r
+BiocManager::install("GenomicRanges", version = "3.8")
+```
 
-DESeq2 # BiocManager::install("DESeq2")
+* edgeR
+```r
+BiocManager::install("edgeR")
+```
+
+* DESeq2
+```r
+BiocManager::install("DESeq2")
 ```
 
 ## 2.2 Quickstart with example data (Selection screen)
