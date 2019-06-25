@@ -51,6 +51,8 @@ GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
 ## 1.2 Simulation quickstart with example data (Selection screen)
+The ouptu will be three files. One containg the information of all the simulated guides (chromosome, start, end, label), one containing the counts of each guide in each pool, and one containing the location of the simulated regulatory regions.
+
 ### 1.2.1. Source the script
 We recommend you move into the provided, empty, directory 'Example_simulations' to generate all files in there.
 ```
@@ -161,6 +163,7 @@ An average guide count of 15 vs 100 vs 500 has a major effect on detecting true 
 
 
 # 2. Analyzing simulated data and evaluate performance
+Running the analysis will provide you with the per-guide score files as well as the per-genome score files for each method. In addition there will be 2 pdfs with the AUC and prAUC curves for each method as well as a .csv file containig the AUC and prAUC scores.
 
 ## 2.1 Installations and Setup for Analysis and performance evaluation
 
