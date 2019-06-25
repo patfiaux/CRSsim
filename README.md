@@ -51,13 +51,14 @@ GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
 ## 1.2 Simulation quickstart with example data (Selection screen)
-### 1.2.1. source the script
+### 1.2.1. Source the script
+We recommend you move into the provided, empty, directory 'Example_simulations' to generate all files in there.
 ```
-source('/path/to/script/RELICS_sim.r')
+source('/path/to/script/CRSsim.r')
 ```
 
 ### 1.2.2. Setting up simulation flags. 
-There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
+Running a simulation will generate a count file (containing all counts for each of the guides) a info file (containing information about the target location of the guide) and an ehancer file (containing the locations of each enhancer). We have set up an empty file for you (Example_simulations) within which you can generate these files. Move into said directory and begin setting the flags. There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
 
 Flags are set up in a list format
 
@@ -72,16 +73,17 @@ sim.flags$simName <- 'Example_simulation'
 
 Provide info about the guide targets. Either supply them directly, as is done here, or generate them (see details 'Advanced Simulations'). The input is a data frame with columns for chromosome, start position and end position: 'chrom', 'start', 'end'. Each row is a guide and details the target information for ech guide. For Cas9, CRISPRi and CRISPRa screens, the difference in start and end should be set to something small, such as: start = target site - 20, end = target site.
 ```
-sim.flags$guides <- example.info
+sim.flags$guides <- read.csv('../Example_data/Example_selectionScreen_info.csv', stringsAsFactors = F)
 ```
 
 If guide targets are provided then the gene of interest should also be provided. The assumption is that guides are also targeting the gene of interest and can serve as positive controls. The input is a data frame with columns called: 'chrom', 'start', 'end'
 ```
-sim.flags$exon <- example.gene
+sim.flags$exon <- read.csv('../Example_data/Example_gene.csv', stringsAsFactors = F)
 ```
 
 Provide the original guide distribution for each replicate. This can be supplied from an existing data set, as is done below. Another option is to generate the distributions using a zero inflated negative binomial distribution. See 'Advanced Simulations' for details.
 ```
+example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
 sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
   before_2 = example.counts$before_repl2)
 ```  
@@ -103,14 +105,15 @@ sim.flags$crisprSystem <- 'CRISPRi'
 
 Specify the number and the size of enhancers to be simulated. They will be placed at random positions within the screen.
 ```
-sim.flags$nrEnhancers <- 5
+sim.flags$nrEnhancers <- 25
 sim.flags$enhancerSize <- 50  # base pairs
 ```
 
-Specify the sequencing depth for each of the pools. In addition, the simulations can simulate data sets where PCR duplicates are either accounted for or not. If they are accounted for set the 'pcrDupl' flag to 'no'. The sequencing depth is given in list format, where each list entry is a replicate with the corresponding sequencing depths.
+Specify the sequencing depth for each of the pools. Here the parameters were set such that the average guide count is 15
+In addition, the simulations can simulate data sets where PCR duplicates are either accounted for or not. If they are accounted for set the 'pcrDupl' flag to 'no'. The sequencing depth is given in list format, where each list entry is a replicate with the corresponding sequencing depths.
 ```
-sim.flags$seqDepth <- list(repl1 = c(16656607, 19431422),
-    repl2 = c(20217155, 21585515))
+sim.flags$seqDepth <- list(repl1 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15),
+    repl2 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15))
 sim.flags$pcrDupl <- 'yes'
 ```
 
@@ -126,8 +129,8 @@ Specify:
 The parameters for all of these can also be manually set. See the 'Advanced Simulations' section for details.
 ```
 sim.flags$selectionStrength <- 'high'
-sim.flags$guideEfficiency <- 'high'
-sim.flags$enhancerStrenth <- 'high'
+sim.flags$guideEfficiency <- 'medium'
+sim.flags$enhancerStrenth <- 'medium'
 ```
 
 Run the simulations
@@ -194,12 +197,90 @@ DESeq2 # BiocManager::install("DESeq2")
 ```
 
 ## 2.2 Quickstart with example data (Selection screen)
-### 2.2.1. source the script
+
+We recommend moving into the empty performance evaluation folder we have provided ('Example_performanceEval') to generate all files within there.
+
+Source the performance evaluation script.
 ```
-source('/path/to/script/RELICS_sim.r')
+source('/path/to/script/RELICS_performance.r')
 ```
 
+Flags are set up in a list format
 
+```
+analysis.specs <- list()
+```
+
+Set the output name of the analysis (and chose a different name from the existing file so you can compare and check that you got the same flags.
+
+```
+analysis.specs$dataName <- 'Example_performanceEval'
+```
+
+Give location of count and info files (easiest if in working directory but can also give a path to files)
+
+```
+analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
+analysis.specs$sgRNAInfoFileLoc <- '../Example_data/Example_simulation_info.csv'
+```
+
+Multiple analysis methods can be compared: RELICS, fold change, edgeR and DESeq2. 
+
+To run RELICS it is necessay to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE the performance script
+```
+source('/path/to/script/RELICS.r')
+source('/path/to/script/RELICS_performance.r')
+```
+
+For RELICS, see analysis instruction details [here](https://github.com/patfiaux/RELICS/blob/master/README.md#quickstart-with-example-data).
+```
+analysis.specs$repl_groups <- '1,2;3,4'
+analysis.specs$glmm_positiveTraining <- 'exon'
+analysis.specs$glmm_negativeTraining <- 'neg' 
+```
+
+For edgeR and DESeq2 and fold change, select the pools which are compared against one another. Pools are referenced by their column-occurance in the count file
+```
+analysis.specs$Group1 <- c(1,3)
+analysis.specs$Group2 <- c(2,4)
+```
+
+For fold change specifically, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondance) or if there is an inbalance between the groups
+```
+analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
+```
+
+```
+analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
+```
+
+Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
+```
+analysis.specs$simulated_data <- 'yes' # specify that the analysis is based on simulated data where the ground thruth is known
+analysis.specs$pos_regions <- '../Example_data/Example_simulation_enhancers.csv' # file location of all known positive regions
+analysis.specs$evaluate_perElement_Performance <- 'yes' # specify that the performance of different methods is to be evaluated
+analysis.specs$positiveLabels <- 'pos' # label for regions which are true positives
+analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are true negatives
+```
+
+Depending on the CRISPR system used the range of effect is different. We recommend setting the range to 20bp for `CRISPRcas9`, 1000bp for `CRISPRi` and `CRISPRa`. Note that the effect range is added to the positions specified in the info file. If the effect range is already included in the positions of the info file then it should be set to 0 here.
+
+In case of a `dualCRISPR` system an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
+```
+analysis.specs$crisprSystem <- 'CRISPRi' # other potions: CRISPRcas9, CRISPRa, dualCRISPR
+analysis.specs$crisprEffectRange <- 1000
+```
+
+Once you have your flags set, create a specification file using the `write_specs_file()` function. The two arguments it takes are the list with flags you just set and the name of the file (.txt will be added automatically so don' include that)
+```
+write_specs_file(analysis.specs, 'Example_performanceEval_specs')
+```
+
+Once you have your specification file set up simply use the `analyze_data()` function to start the analysis. For the example given it will take about 5 min, depending on your operating system.
+
+```
+analyze_data('Example_performanceEval_specs.txt')
+```
 
 # 3. Advanced Flags
 
