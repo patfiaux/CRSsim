@@ -95,36 +95,36 @@ sim.flags$exon <- read.csv('../Example_data/Example_gene.csv', stringsAsFactors 
 ```
 
 Provide the original guide distribution for each replicate. This can be supplied from an existing data set, as is done below. Another option is to generate the distributions using a zero inflated negative binomial distribution. See 'Advanced Simulations' for details.
-```
+```r
 example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
 sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
   before_2 = example.counts$before_repl2)
 ```  
 
 Specify the screen type. Either a selection screen like here or a FACSscreen, where cells are sorted into different pools. See 'FACS screen simulation' section for an example simulation of a FACS screen.
-```
+```r
 sim.flags$selectionScreen <- 'yes'
 ```
 
 Add names for the different pools in each replicate. In this case, each replicate will have a before selection and after selection pool. The names will be before_repl1, after_repl1, before_repl2, ...
-```
+```r
 sim.flags$poolNames <- c('before', 'after')
 ```
 
 Sepcify the CRISPR system used. For CRISPRi the default range of effect is assumed to be 1kb. However this can be changed. See the 'Advanced Simulations' section for more details and how to simulate other CRISPR systems.
-```
+```r
 sim.flags$crisprSystem <- 'CRISPRi'
 ```
 
 Specify the number and the size of enhancers to be simulated. They will be placed at random positions within the screen.
-```
+```r
 sim.flags$nrEnhancers <- 25
 sim.flags$enhancerSize <- 50  # base pairs
 ```
 
 Specify the sequencing depth for each of the pools. Here the parameters were set such that the average guide count is 15
 In addition, the simulations can simulate data sets where PCR duplicates are either accounted for or not. If they are accounted for set the 'pcrDupl' flag to 'no'. The sequencing depth is given in list format, where each list entry is a replicate with the corresponding sequencing depths.
-```
+```r
 sim.flags$seqDepth <- list(repl1 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15),
     repl2 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15))
 sim.flags$pcrDupl <- 'yes'
@@ -140,14 +140,14 @@ Specify:
     
     
 The parameters for all of these can also be manually set. See the 'Advanced Simulations' section for details.
-```
+```r
 sim.flags$selectionStrength <- 'high'
 sim.flags$guideEfficiency <- 'medium'
 sim.flags$enhancerStrenth <- 'medium'
 ```
 
 Run the simulations
-```
+```r
 simulate_data(sim.flags)
 ```
 
@@ -155,17 +155,17 @@ simulate_data(sim.flags)
 Outlined below are the main differences to the flags set above
 
 Instead of a selection screen, the FACS screen flag is set.
-```
+```r
 sim.flags$FACSscreen <- 'yes'
 ```
 
 As above, each pool per replicate has to be named. However, in this case there will be more than one pool. Here an example where cells are sorted form an input pool into a high, medium and low expression pool.
-```
+```r
 sim.flags$poolNames <- c('input', 'high', 'medium', 'low')
 ```
 
 The sequencing depth has to be specified for each of the four pools for each of the replicates.
-```
+```r
 sim.flags$seqDepth <- list(repl1 = rep(18e6, 4), repl2 = rep(18e6, 4) )
 ```
 
@@ -215,60 +215,60 @@ DESeq2 # BiocManager::install("DESeq2")
 We recommend moving into the empty performance evaluation folder we have provided ('Example_performanceEval') to generate all files within there.
 
 Source the performance evaluation script.
-```
+```r
 source('/path/to/script/RELICS_performance.r')
 ```
 
 Flags are set up in a list format
 
-```
+```r
 analysis.specs <- list()
 ```
 
 Set the output name of the analysis (and chose a different name from the existing file) so you can compare and check that you got the same flags.
 
-```
+```r
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
 
 Give location of count and info files. Check the [RELICS repo](https://github.com/patfiaux/RELICS) for file formats.
 
-```
+```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
 analysis.specs$sgRNAInfoFileLoc <- '../Example_data/Example_simulation_info.csv'
 ```
 
 Multiple analysis methods can be compared: RELICS, fold change, edgeR and DESeq2. 
-```
+```r
 analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
 ```
 
 To run RELICS, it is necessary to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE running the performance script.
-```
+```r
 source('/path/to/script/RELICS.r')
 source('/path/to/script/RELICS_performance.r')
 ```
 
 For RELICS, see analysis instruction details [here](https://github.com/patfiaux/RELICS/blob/master/README.md#quickstart-with-example-data).
-```
+```r
 analysis.specs$repl_groups <- '1,2;3,4'
 analysis.specs$glmm_positiveTraining <- 'exon'
 analysis.specs$glmm_negativeTraining <- 'neg' 
 ```
 
 For edgeR and DESeq2 and fold change, select the pools which are compared against one another. Pools are referenced by their column-occurance in the count file.
-```
+```r
 analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
 ```
 
 For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondance) or if there is an inbalance between the groups
-```
+```r
 analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
 ```
 
 Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
-```
+```r
 analysis.specs$simulated_data <- 'yes' # specify that the analysis is based on simulated data where the ground thruth is known
 analysis.specs$pos_regions <- '../Example_data/Example_simulation_enhancers.csv' # file location of all known positive regions
 analysis.specs$evaluate_perElement_Performance <- 'yes' # specify that the performance of different methods is to be evaluated
@@ -279,19 +279,19 @@ analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are 
 Depending on the CRISPR system used, the range of effect is different. We recommend setting the range to 20bp for `CRISPRcas9`, 1000bp for `CRISPRi` and `CRISPRa`. Note that the effect range is added to the positions specified in the info file. If the effect range is already included in the positions of the info file then it should be set to 0 here.
 
 In case of a `dualCRISPR` system, an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
-```
+```r
 analysis.specs$crisprSystem <- 'CRISPRi' # other potions: CRISPRcas9, CRISPRa, dualCRISPR
 analysis.specs$crisprEffectRange <- 1000
 ```
 
 Once you have your flags set, create a specification file using the `write_specs_file()` function. The two arguments it takes are the list with flags you just set and the name of the file (.txt will be added automatically so don' include that)
-```
+```r
 write_specs_file(analysis.specs, 'Example_performanceEval_specs')
 ```
 
 Once you have your specification file set up simply use the `analyze_data()` function to start the analysis. For the example given it will take about 5 min, depending on your operating system.
 
-```
+```r
 analyze_data('Example_performanceEval_specs.txt')
 ```
 
@@ -305,12 +305,12 @@ screenType: CRISPRi, CRISPRa, Cas9, dualCRISPR
 
 If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
 
-```
+```r
 sim.flags$guides <- generate_guide_info(list(nrGuides = 10000, screenType = 'dualCRISPR', stepSize = 20, deletionSize = 1000))
 ```
 
 The input count distribution for the different replicates can either be taken from an existing data set. However, it is also possible both generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter as well as a parameter indicating the fraction of the disctribution originating from the zero mass (eta). Below are the steps to both obtain as well as use the parameters from a ZINB
-```
+```r
 # obtain ZINB parameters which descibe the distribution
 before.repl1.par <- obtain_ZINB_pars(example.counts$before_repl1)
 example.rate <- before.repl1.par$rate              # rate = 76.5
@@ -329,7 +329,7 @@ Currently, 4 different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, 
 
 By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this size using the 'crisprEffectRange'
 For dualCRISPR the effect range is the deletion itself. The deletion size introduced by two guides has to be represented by 'start' being the target site of guide 1 and 'end' the target site of guide 2.
-```
+```r
 # example for how to change the effect range of a CRISPR system used
 sim.flags$crisprSystem <- 'CRISPRi'
 sim.flags$crisprEffectRange <- 500
@@ -345,7 +345,7 @@ Both the guide efficiency and the enhancer strength are simulated from a beta di
     
 (same for guideShape1, guideShape2)
 
-```
+```r
 hist(rbeta(10000, shape1 = 8, shape2 = 1))  # randomly generate 10000 instances of the beta distribution
 
 sim.flags$guideEfficiency <- 'high'
@@ -366,7 +366,7 @@ Cells are sorted into three pools (high, medium and low gene expression) and the
 Continuing the example above: assume the expected probabilities a positive control is sorted into any given pool are: 0.45, 0.45, 0.1. All cells containing this positive control are subsequently assigned to the pools by observing a Dirichlet random variable:  `rdirichlet(1, c(45, 45, 10))`
 
 To manually set the Dirichlet probabilities use the 'posSortingFrequency' and the 'negSortingFrequency' flags. To continue the example from above:
-```
+```r
 sim.flags$posSortingFrequency <- c(45, 45, 10)
 sim.flags$negSortingFrequency <- c(48, 48, 4)
 ```
@@ -381,7 +381,7 @@ Note:
 The defaults for the 'high' flags were chosen due to their capability of accurately representing the sorting parameters for either a selection screen or a FACS screen. The default 'low' flags were chosen as an arbitrary fraction of the 'high' selection.
 
 The default flags used for 'high':
-```
+```r
 # for a selection screen:
 sim.flags$posSortingFrequency <- c(1)
 sim.flags$negSortingFrequency <- c(5)
@@ -393,7 +393,7 @@ sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ```
 
 The default flags used for 'low':
-```
+```r
 # for a selection screen:
 sim.flags$posSortingFrequency <- c(4)
 sim.flags$negSortingFrequency <- c(5)
