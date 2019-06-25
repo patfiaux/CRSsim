@@ -1,5 +1,5 @@
 # CRSsim
-This github account contains code and instructions for simulating CRISPR regulatory screens and assessing performance of different methods used in CRISPR regulatory screens. It contains the following sections:
+This repository contains code and instructions for simulating CRISPR regulatory screens and assessing performance of analysis methods for CRISPR regulatory screens. It contains the following sections:
 
 [Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#1-simulating-crispr-regulatory-screen-data)
 
@@ -21,16 +21,16 @@ The simulations mirror the experimental steps by taking the following variables 
 | Specify sequencing depth | Specify sequencing depth |
 | Sequence pools | Specify whether PCR-duplicates can be detected or not |
 
-\* If a selection screen is performed the user would specify the number of cells in the ‘before’ pool
+\* If a selection screen is performed the user specifies the number of cells in the ‘before’ pool
 
 ** dropout rate
 
 ## 1.1 Installations and Setup for Simulations
-The simulations are done in R [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
+The simulations are done in [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
 
 Download source code to your desired location: `https://github.com/patfiaux/CRSsim.git`
 
-To simulate data you need the packages below. If you don't have them, install them using the command after the '#'):
+To simulate data you need the packages below. If you don't have them, install them using the command after the '#'). Installations will take ~5min on a standard laptop.
 ### 1.1.1 R packages
 ```
 MCMCpack # install.packages('MCMCpack')
@@ -51,16 +51,16 @@ GenomicRanges # BiocManager::install("GenomicRanges", version = "3.8")
 ```
 
 ## 1.2 Simulation quickstart with example data (Selection screen)
-The ouptu will be three files. One containg the information of all the simulated guides (chromosome, start, end, label), one containing the counts of each guide in each pool, and one containing the location of the simulated regulatory regions.
+The output will be three files. One contains the information of all the simulated guides (chromosome, start, end, label), one contains the counts of each guide in each pool, and one contains the location of the simulated regulatory regions.
 
 ### 1.2.1. Source the script
-We recommend you move into the provided, empty, directory 'Example_simulations' to generate all files in there.
+We recommend you move into the provided empty directory 'Example_simulations' to generate all files in there.
 ```
 source('/path/to/script/CRSsim.r')
 ```
 
 ### 1.2.2. Setting up simulation flags. 
-Running a simulation will generate a count file (containing all counts for each of the guides) a info file (containing information about the target location of the guide) and an ehancer file (containing the locations of each enhancer). We have set up an empty file for you (Example_simulations) within which you can generate these files. Move into said directory and begin setting the flags. There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
+Running a simulation will generate a count file (containing all counts for each of the guides) a info file (containing information about the target location of the guide) and an enhancer file (containing the locations of each enhancer). We have set up an empty file for you (Example_simulations) within which you can generate these files. Move into this directory and begin setting the flags. There are several different flags which have no defaults and need to be supplied by the user. Below is the outline on how to set the most important flags to get the simulation going.
 
 Flags are set up in a list format
 
@@ -73,7 +73,7 @@ Set the output name of the simulation
 sim.flags$simName <- 'Example_simulation'
 ```
 
-Provide info about the guide targets. Either supply them directly, as is done here, or generate them (see details 'Advanced Simulations'). The input is a data frame with columns for chromosome, start position and end position: 'chrom', 'start', 'end'. Each row is a guide and details the target information for ech guide. For Cas9, CRISPRi and CRISPRa screens, the difference in start and end should be set to something small, such as: start = target site - 20, end = target site.
+Provide info about the guide targets. Either supply them directly, as is done here, or generate them (see details 'Advanced Simulations'). The input is a data frame with columns for chromosome, start position and end position: 'chrom', 'start', 'end'. Each row is a guide and details the target information for each guide. For Cas9, CRISPRi and CRISPRa screens, the difference in start and end should be set to something small, such as: start = target site - 20, end = target site.
 ```
 sim.flags$guides <- read.csv('../Example_data/Example_selectionScreen_info.csv', stringsAsFactors = F)
 ```
@@ -95,12 +95,12 @@ Specify the screen type. Either a selection screen like here or a FACSscreen, wh
 sim.flags$selectionScreen <- 'yes'
 ```
 
-Add names for the different pools in each replicate. In this case each replicate will have a before selection and after selection pool. The names will be before_repl1, after_repl1, before_repl2, ...
+Add names for the different pools in each replicate. In this case, each replicate will have a before selection and after selection pool. The names will be before_repl1, after_repl1, before_repl2, ...
 ```
 sim.flags$poolNames <- c('before', 'after')
 ```
 
-Sepcify the crispry system used. For CRISPRi the default range of effect is assumed to be 1kb. However this can be changed. See the 'Advanced Simulations' section for more details and how to simulate other CRISPR systems.
+Sepcify the CRISPR system used. For CRISPRi the default range of effect is assumed to be 1kb. However this can be changed. See the 'Advanced Simulations' section for more details and how to simulate other CRISPR systems.
 ```
 sim.flags$crisprSystem <- 'CRISPRi'
 ```
@@ -148,7 +148,7 @@ Instead of a selection screen, the FACS screen flag is set.
 sim.flags$FACSscreen <- 'yes'
 ```
 
-As above, each pool per replicate has to be names. However, in this case there will be more than one pool. Here an example where wells are sorted form an input pool into a high, medium and low expression pool.
+As above, each pool per replicate has to be named. However, in this case there will be more than one pool. Here an example where cells are sorted form an input pool into a high, medium and low expression pool.
 ```
 sim.flags$poolNames <- c('input', 'high', 'medium', 'low')
 ```
@@ -163,7 +163,7 @@ An average guide count of 15 vs 100 vs 500 has a major effect on detecting true 
 
 
 # 2. Analyzing simulated data and evaluate performance
-Running the analysis will provide you with the per-guide score files as well as the per-genome score files for each method. In addition there will be 2 pdfs with the AUC and prAUC curves for each method as well as a .csv file containig the AUC and prAUC scores.
+Running the analysis will provide you with the per-guide score files as well as the per-genome score files for each method. In addition there will be 2 PDFs with the AUC and prAUC curves for each method as well as a .csv file containig the AUC and prAUC scores.
 
 ## 2.1 Installations and Setup for Analysis and performance evaluation
 
@@ -214,7 +214,7 @@ Flags are set up in a list format
 analysis.specs <- list()
 ```
 
-Set the output name of the analysis (and chose a different name from the existing file so you can compare and check that you got the same flags.
+Set the output name of the analysis (and chose a different name from the existing file) so you can compare and check that you got the same flags.
 
 ```
 analysis.specs$dataName <- 'Example_performanceEval'
@@ -232,7 +232,7 @@ Multiple analysis methods can be compared: RELICS, fold change, edgeR and DESeq2
 analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
 ```
 
-To run RELICS it is necessay to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE the performance script.
+To run RELICS, it is necessary to download the [RELICS GitHub](https://github.com/patfiaux/RELICS/) and source the RELICS script BEFORE running the performance script.
 ```
 source('/path/to/script/RELICS.r')
 source('/path/to/script/RELICS_performance.r')
@@ -251,7 +251,7 @@ analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
 ```
 
-For fold change specifically, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondance) or if there is an inbalance between the groups
+For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondance) or if there is an inbalance between the groups
 ```
 analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
 ```
@@ -265,9 +265,9 @@ analysis.specs$positiveLabels <- 'pos' # label for regions which are true positi
 analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are true negatives
 ```
 
-Depending on the CRISPR system used the range of effect is different. We recommend setting the range to 20bp for `CRISPRcas9`, 1000bp for `CRISPRi` and `CRISPRa`. Note that the effect range is added to the positions specified in the info file. If the effect range is already included in the positions of the info file then it should be set to 0 here.
+Depending on the CRISPR system used, the range of effect is different. We recommend setting the range to 20bp for `CRISPRcas9`, 1000bp for `CRISPRi` and `CRISPRa`. Note that the effect range is added to the positions specified in the info file. If the effect range is already included in the positions of the info file then it should be set to 0 here.
 
-In case of a `dualCRISPR` system an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
+In case of a `dualCRISPR` system, an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
 ```
 analysis.specs$crisprSystem <- 'CRISPRi' # other potions: CRISPRcas9, CRISPRa, dualCRISPR
 analysis.specs$crisprEffectRange <- 1000
@@ -288,11 +288,11 @@ analyze_data('Example_performanceEval_specs.txt')
 
 ## 3. Advanced Simulations
 
-Guides and their targets can be simulated if not readily available. Both single-guide as well as dual guide screens can be simulated. For both types the number of guides (nrGuides) have to be specified, as well as the screen type (screenType) and the step size between guides (stepSize). In addition to that, if a dual CRISPR screen is chosen, the deletion size has to be specified (stepSize).
+Guides and their targets can be simulated if not readily available. Both single-guide as well as dual guide screens can be simulated. For both types the number of guides (nrGuides) have to be specified, as well as the screen type (screenType) and the step size between guides (stepSize). In addition, if a dual CRISPR screen is chosen, the deletion size has to be specified (stepSize).
 
 screenType: CRISPRi, CRISPRa, Cas9, dualCRISPR
 
-If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive control.
+If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
 
 ```
 sim.flags$guides <- generate_guide_info(list(nrGuides = 10000, screenType = 'dualCRISPR', stepSize = 20, deletionSize = 1000))
@@ -348,15 +348,13 @@ sim.flags$guideShape2 <- 2
 ```
 
 
-Selection strength: To understand the details of the selection strength it is helpful to have some understanding of the Dirichlet distribution. Both for the selection screen as well as for the FACS screen the prbability of each guide either being selected, or sorted into a given pool is given by a random Dirichlet deviate. As an example; 
+Selection strength: To understand the details of the selection strength it is helpful to have some understanding of the Dirichlet distribution. Both for the selection screen as well as for the FACS screen the prbability of each guide either being selected, or sorted into a given pool is given by a Dirichlet random variate. As an example; 
 
-Cells are sorted into three pools (high, medium and low gene expression) and the probability of a negative control to be sorted into any of the given pools at random is captured by the probabilities: 0.48, 0.48, 0.04 . However, for each guide this probability shifts slightly. The Dirichlet deviate provides this variation. All cells containing the negative control above are subsequently assigned to the pools with following probabilities:  `rdirichlet(1, c(48, 48, 4))`
+Cells are sorted into three pools (high, medium and low gene expression) and the expected probabilities a negative control will be sorted into any of the given pools are: 0.48, 0.48, 0.04. However, for each guide this probability shifts slightly. The Dirichlet random variate provides this variation. All cells containing the negative control above are subsequently assigned to the pools with following probabilities:  `rdirichlet(1, c(48, 48, 4))`
 
-Continuing the example above: assume the probability of a positive control to be sorted into any given pool to be represented by the following: 0.45, 0.45, 0.1. All cells containing this positive control above are subsequently assigned to the pools with following probabilities:  `rdirichlet(1, c(45, 45, 10))`
+Continuing the example above: assume the expected probabilities a positive control is sorted into any given pool are: 0.45, 0.45, 0.1. All cells containing this positive control are subsequently assigned to the pools by observing a Dirichlet random variable:  `rdirichlet(1, c(45, 45, 10))`
 
-If the above does not seem like a big difference, view it as benig a 2.5 fold change in being sorted into the low pool. Thatchange is not insignificant!
-
-To manually set the diriclet probabilities use the 'posSortingFrequency' and the 'negSortingFrequency' flags. To continue the example from above:
+To manually set the Dirichlet probabilities use the 'posSortingFrequency' and the 'negSortingFrequency' flags. To continue the example from above:
 ```
 sim.flags$posSortingFrequency <- c(45, 45, 10)
 sim.flags$negSortingFrequency <- c(48, 48, 4)
