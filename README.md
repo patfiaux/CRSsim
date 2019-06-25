@@ -30,7 +30,7 @@ The simulations are done in [R](https://cran.r-project.org/bin/windows/base/). P
 
 Download source code to your desired location: `https://github.com/patfiaux/CRSsim.git`
 
-To simulate data you need the packages below. If you don't have them, install them using the command after the '#'):
+To simulate data you need the packages below. If you don't have them, install them using the command after the '#'). Installations will take ~5min on a standard laptop.
 ### 1.1.1 R packages
 ```
 MCMCpack # install.packages('MCMCpack')
