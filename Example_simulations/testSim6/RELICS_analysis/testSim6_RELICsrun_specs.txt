@@ -1,9 +1,0 @@
-dataName:testSim6_RELICsrun
-CountFileLoc:testSim6_sim1_counts.csv
-sgRNAInfoFileLoc:testSim6_sim1_info.csv
-repl_groups:1,2;3,4
-glmm_positiveTraining:exon
-glmm_negativeTraining:neg
-Method:RELICS-search
-crisprSystem:CRISPRi
-crisprEffectRange:1000
