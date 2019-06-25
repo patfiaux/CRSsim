@@ -28,10 +28,12 @@ The simulation parameters  mimic the experimental procedure of CRISPR regulatory
 ## 1.1 Installations and Setup for Simulations
 The simulations are executed in [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher installed on your computer.
 
-Download the source code to your desired location with the following command: 
+Clone CRSsim to your desired location with the following command: 
  ```bash
 git clone https://github.com/patfiaux/CRSsim.git
 ```
+
+Or download the repository.
 
 To simulate data, you will need the packages listed below. If you don't have them, install them using the following commands in `R`. Installations should take ~5min on a standard laptop.
 ### 1.1.1 R packages
