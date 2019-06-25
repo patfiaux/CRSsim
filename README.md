@@ -1,14 +1,14 @@
 # CRSsim
-This repository contains code and instructions for simulating CRISPR regulatory screens and assessing performance of analysis methods for CRISPR regulatory screens. It contains the following sections:
+This repository contains code and instructions for simulating CRISPR regulatory screens and assessing the performance of analysis methods for CRISPR regulatory screens. It contains the following sections:
 
 [Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#1-simulating-crispr-regulatory-screen-data)
 
 [Analysis and performance](https://github.com/patfiaux/CRSsim/blob/master/README.md#2-analyzing-simulated-data-and-evaluate-performance)
 
-[Advanced Flags](https://github.com/patfiaux/CRSsim/blob/master/README.md#3-advanced-flags)
+[Advanced flags](https://github.com/patfiaux/CRSsim/blob/master/README.md#3-advanced-flags)
 
-# 1. Simulating CRISPR regulatory screen data
-The simulations mirror the experimental steps by taking the following variables into account:
+# 1. Simulating data from CRISPR regulatory screens
+The simulations mimic the experimental procedure of CRISPR regulatory screens by taking the following variables into account:
 
 | Experimental step | Simulated step |
 | ----------------- | -------------- |
@@ -21,14 +21,17 @@ The simulations mirror the experimental steps by taking the following variables 
 | Specify sequencing depth | Specify sequencing depth |
 | Sequence pools | Specify whether PCR-duplicates can be detected or not |
 
-\* If a selection screen is performed the user specifies the number of cells in the ‘before’ pool
+\* If a selection screen is performed in the experiment, the user must specify the number of cells in the pool before sorting for the simulation.
 
 ** dropout rate
 
 ## 1.1 Installations and Setup for Simulations
-The simulations are done in [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher
+The simulations are executed in [R](https://cran.r-project.org/bin/windows/base/). Please make sure you have R version 3.5.1 or higher installed on your computer.
 
-Download source code to your desired location: `https://github.com/patfiaux/CRSsim.git`
+Download the source code to your desired location with the following command: 
+ ```bash
+git clone https://github.com/patfiaux/CRSsim.git
+```
 
 To simulate data you need the packages below. If you don't have them, install them using the command after the '#'). Installations will take ~5min on a standard laptop.
 ### 1.1.1 R packages
