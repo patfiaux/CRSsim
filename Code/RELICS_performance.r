@@ -7175,7 +7175,7 @@ run_edgeR <- function(input.counts, input.info, input.specs){
 
   DGE.output <- DGEList(filtered.matrix, group = factor(group.names))  #create DGE list object
   edgeR.design <- model.matrix(~factor(group.names))  # specify there are only 2 groups
-  edgeR.dispersion <- estimateDisp(DGE.output, edgeR.design)
+  edgeR.dispersion <- suppressWarnings(estimateDisp(DGE.output, edgeR.design)) # suppressing warnings about zero variance
   edgeR.fit <- glmFit(edgeR.dispersion, edgeR.design)
   edgeR.lrt <- glmLRT(edgeR.fit, coef=2)
   edgeR.table <- edgeR.lrt$table
