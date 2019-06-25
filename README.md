@@ -217,7 +217,7 @@ Set the output name of the analysis (and chose a different name from the existin
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
 
-Give location of count and info files (easiest if in working directory but can also give a path to files)
+Give location of count and info files. Check the [RELICS repo]((https://github.com/patfiaux/RELICS) for file formats.
 
 ```
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
