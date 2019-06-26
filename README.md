@@ -428,13 +428,13 @@ sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ```
 
 ## 3.2 Advanced Analysis and performance evaluation
-To analyze data with MAGeCK as used by Diao et al. 2017, specify the usage of alphaRRA and the bins within which to tile the analyzed region. Note, alphaRRA will be applied to per-guide scoresfrom all methods given by the `$Method` flag.
+To analyze data with MAGeCK as used by [Diao et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28417999), specify use of `alphaRRA` and the bins within which to tile the analyzed region. Note, `alphaRRA` will be applied to per-guide scores from all methods given by the `Method` flag.
 ```r
 analysis.specs$postScoreAlphaRRA <- 'yes'
 analysis.specs$binSize <- 50
 ```
 
-To combine guide scores using a sliding window, as done by Fulco et al. 2016 or Simeonov et al. 2017 specify the nuber of guides to include per sliding window as well as the maximum window size (if tiling has a 10KB gap it would not make sense to consider the enire region as one score).
+To combine guide scores using a sliding window as in [Fulco et al. 2016](https://www.ncbi.nlm.nih.gov/pubmed/27708057) or [Simeonov et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28854172), specify the number of guides to include per sliding window as well as the maximum window size (if the tiled deletion generates a 10KB gap it would not make sense to consider the entire region as one score).
 ```r
 analysis.specs$postScoreSlidingWindow <- 'yes'
 analysis.specs$guidePerSlidingWindow <- 15
