@@ -427,3 +427,16 @@ sim.flags$posSortingFrequency <- c(97, 97, 5) * 0.5
 sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ```
 
+## 3.2 Advanced Analysis and performance evaluation
+To analyze data with MAGeCK as used by Diao et al. 2017, specify the usage of alphaRRA and the bins within which to tile the analyzed region. Note, alphaRRA will be applied to per-guide scoresfrom all methods given by the `$Method` flag.
+```r
+analysis.specs$postScoreAlphaRRA <- 'yes'
+analysis.specs$binSize <- 50
+```
+
+To combine guide scores using a sliding window, as done by Fulco et al. 2016 or Simeonov et al. 2017 specify the nuber of guides to include per sliding window as well as the maximum window size (if tiling has a 10KB gap it would not make sense to consider the enire region as one score).
+```r
+analysis.specs$postScoreSlidingWindow <- 'yes'
+analysis.specs$guidePerSlidingWindow <- 15
+analysis.specs$maxWindowSize <- 8000
+```
