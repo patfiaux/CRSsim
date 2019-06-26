@@ -69,7 +69,7 @@ The output will consist of three .csv files with the following information:
 ### 1.2.1. Source the script
 We recommend that you navigate into the `Example_simulations` directory (included in the repository) and generate all output files there. After navigating into that directory, run the following command in order to access all the functions called by the simulation:
 ``` r
-source('/[path to script]/CRSsim.r')
+source('/path/to/script/CRSsim.r')
 ```
 
 ### 1.2.2. Setting up simulation flags
