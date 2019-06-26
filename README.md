@@ -290,6 +290,7 @@ Top of guide information file: Example_simulation_info.csv
 Top of guide count file: Example_simulation_counts.csv
 
 | sim1_repl1_before	| sim1_repl1_after	| sim1_repl2_before	| sim1_repl2_after |
+|----------|----------|----------|----------|
 | 15 |	6 |	11 |	14 |
 | 8 |	1 |	6 |	5 |
 | 8	| 6	 | 3	| 11 |
