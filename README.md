@@ -101,7 +101,7 @@ sim.flags$simName <- 'Example_simulation'
 
 Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as $ \text{start} = \text{target site} - 20$ and $\text{end} = \text{target site}$. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
 ```r
-sim.flags$guides <- '../Example_data/Example_selectionScreen_info.csv'
+sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
 4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
 
@@ -364,7 +364,10 @@ Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualC
 If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
 
 ```r
-sim.flags$guides <- generate_guide_info(list(nrGuides = 10000, crisprSystem = 'dualCRISPR', stepSize = 20, deletionSize = 1000))
+sim.flags$nrGuides <- 10000
+sim.flags$crisprSystem <- 'dualCRISPR'
+sim.flags$stepSize <- 20
+sim.flags$deletionSize <- 1000 # only used if $crisprSystem is 'dualCRISPR'
 ```
 
 The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
