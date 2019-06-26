@@ -180,7 +180,7 @@ performanceEvaluation_recording <- function(input.score.list, input.specs){
       temp.scores <- ordered.temp.viterbi.df$newScores
       temp.labels <- ordered.temp.viterbi.df$label
     }
-    if('simulated_data' %in% names(input.specs)){
+    if('simulated_data' %in% names(input.specs) & input.specs$simulated_data){
       all.labels <- unique(temp.labels)
       temp.neg.labels <- all.labels[-which(all.labels %in% c(temp.pos.labels, 'exon') )]
     }
@@ -347,7 +347,7 @@ performanceEvaluation_perRegion_recording <- function(input.score.list, input.sp
       temp.score.df <- ordered.temp.viterbi.df
     }
 
-    if('simulated_data' %in% names(input.specs)){
+    if('simulated_data' %in% names(input.specs) & input.specs$simulated_data){
       temp.score.df <- temp.score.df[which(temp.score.df$label %in% c(temp.pos.labels, temp.neg.labels) ),]
     }
 
@@ -572,7 +572,7 @@ performanceEvaluation_perElement_recording <- function(input.score.list, input.s
       temp.score.df <- ordered.temp.viterbi.df
     }
 
-    if('simulated_data' %in% names(input.specs)){
+    if('simulated_data' %in% names(input.specs) & input.specs$simulated_data){
       temp.score.df <- temp.score.df[which(temp.score.df$label %in% c(temp.pos.labels, temp.neg.labels) ),]
     }
 
@@ -800,7 +800,7 @@ performanceEvaluation_perRegion_recording_old <- function(input.score.list, inpu
       temp.score.df <- ordered.temp.viterbi.df
     }
 
-    if('simulated_data' %in% names(input.specs)){
+    if('simulated_data' %in% names(input.specs) & input.specs$simulated_data){
       if('exon' %in% unique(temp.score.df$label)){
         temp.score.df <- temp.score.df[which(temp.score.df$label %in% c(temp.pos.labels, temp.neg.labels) ),]
       }
@@ -2148,7 +2148,7 @@ post_score_calculation <- function(input.list, input.specs){
     if('postScoreSlidingWindow' %in% names(input.specs)){
       if(input.specs$postScoreSlidingWindow){
         out.list <- c(out.list, slidingWindow_wrapper(input.list, input.specs))
-      }    
+      }
     }
     if('RELICS_genomeScoring' %in% names(input.specs)){
       out.list <- c(out.list, RELICS_genomeScoring_wrapper(input.list, input.specs))
@@ -8147,7 +8147,7 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
       out_specs_list$crestEdgeRfilter <- strsplit(spec,':')[[1]][2]
     }
     if(spec_id == 'simulated_data'){
-      out_specs_list$simulated_data <- strsplit(spec,':')[[1]][2]
+      out_specs_list$simulated_data <- as.logical(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'glmm_positiveTraining'){
       out_specs_list$glmm_positiveTraining <- strsplit(strsplit(spec,':')[[1]][2],',')[[1]]
