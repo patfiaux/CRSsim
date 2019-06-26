@@ -327,7 +327,7 @@ analysis.specs$foldChangePaired <- TRUE # else FALSE
 ```
 8. Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
 ```r
-analysis.specs$simulated_data <- 'yes' # specify that the analysis is based on simulated data where the ground thruth is known
+analysis.specs$simulated_data <- TRUE # specify that the analysis is based on simulated data where the ground thruth is known
 analysis.specs$pos_regions <- '../Example_data/Example_simulation_enhancers.csv' # file location of all known positive regions
 analysis.specs$evaluate_perElement_Performance <- 'yes' # specify that the performance of different methods is to be evaluated
 analysis.specs$positiveLabels <- 'pos' # label for regions which are true positives
