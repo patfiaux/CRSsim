@@ -344,8 +344,12 @@ before.repl2.simulated <- create_ZINB_shape(15000, example.eta, example.rate, ex
 sim.flags$inputGuideDistr <- cbind(before_1 = before.repl1.simulated, before_2 = before.repl2.simulated)
 ```  
 
-Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.<\br>
-By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.<\br>
+Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.
+
+
+By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.
+
+
 For dualCRISPR, the effect range is equivalent to the deletion size. The deletion size introduced by two guides must be represented by 'start' set as the target site of guide 1 and 'end' as the target site of guide 2.
 ```r
 # example for how to change the effect range of a CRISPR system used
