@@ -104,6 +104,7 @@ Each row represents a different guide and its target site location. For Cas9, CR
 sim.flags$guides <- '../Example_data/Example_selectionScreen_info.csv'
 ```
 4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
+
 | chrom | start | end |
 |----------|----------|----------|
 | chr8 | 128748314 | 128748869 |
