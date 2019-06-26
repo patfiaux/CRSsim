@@ -109,18 +109,18 @@ set_default_flags <- function(input.list){
   if(! 'inputCellNr' %in% input.list.names){
     out.list$inputCellNr <- rep(50e6, ncol(out.list$inputGuideDistr))
   }
-  if('enhancerStrenth' %in% input.list.names){
-    if(out.list$enhancerStrenth == 'high'){
+  if('enhancerStrength' %in% input.list.names){
+    if(out.list$enhancerStrength == 'high'){
       out.list$enhancerShape1 <- 7
       out.list$enhancerShape2 <- 2
-    } else if(out.list$enhancerStrenth == 'medium'){
+    } else if(out.list$enhancerStrength == 'medium'){
       out.list$enhancerShape1 <- 5
       out.list$enhancerShape2 <- 5
-    } else if(out.list$enhancerStrenth == 'low'){
+    } else if(out.list$enhancerStrength == 'low'){
       out.list$enhancerShape1 <- 2
       out.list$enhancerShape2 <- 7
     } else{
-      print('Error: please specify valid enhancerStrenth (high, medium, low)')
+      print('Error: please specify valid enhancerStrength (high, medium, low)')
       break()
     }
   }
@@ -254,11 +254,11 @@ set_default_flags <- function(input.list){
   }
 
   if(! 'enhancerShape1' %in% names(out.list)){
-    print('Error: please specify valid enhancerStrenth (high, medium, low) or set the parameters for enhancerShape1 manually')
+    print('Error: please specify valid enhancerStrength (high, medium, low) or set the parameters for enhancerShape1 manually')
     break()
   }
   if(! 'enhancerShape2' %in% names(out.list)){
-    print('Error: please specify valid enhancerStrenth (high, medium, low) or set the parameters for enhancerShape2 manually')
+    print('Error: please specify valid enhancerStrength (high, medium, low) or set the parameters for enhancerShape2 manually')
     break()
   }
   if(! 'guideShape1' %in% names(out.list)){
