@@ -2140,13 +2140,15 @@ post_score_calculation <- function(input.list, input.specs){
     if('postScoreAlphaRRA' %in% names(input.specs)){
       if(input.specs$postScoreAlphaRRA){
         out.list <- c(out.list, alphaRRA_wrapper(input.list, input.specs))
-      }  
+      }
     }
     if('postScoreGuideWindowRRA' %in% names(input.specs)){
       out.list <- c(out.list, guideWindowRRA_wrapper(input.list, input.specs))
     }
     if('postScoreSlidingWindow' %in% names(input.specs)){
-      out.list <- c(out.list, slidingWindow_wrapper(input.list, input.specs))
+      if(input.specs$postScoreSlidingWindow){
+        out.list <- c(out.list, slidingWindow_wrapper(input.list, input.specs))
+      }    
     }
     if('RELICS_genomeScoring' %in% names(input.specs)){
       out.list <- c(out.list, RELICS_genomeScoring_wrapper(input.list, input.specs))
@@ -8051,7 +8053,7 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
       out_specs_list$postScoreAlphaRRA <- as.logical(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'postScoreSlidingWindow'){
-      out_specs_list$postScoreSlidingWindow <- strsplit(spec,':')[[1]][2]
+      out_specs_list$postScoreSlidingWindow <- as.logical(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'guidePerSlidingWindow'){
       out_specs_list$guidePerSlidingWindow <- as.numeric(strsplit(strsplit(spec,':')[[1]][2],',')[[1]])
@@ -8512,7 +8514,7 @@ none_y50_analysis <- function(input.par.list){
   # #input.par.list$postScoringCREST <- 'yes'
   input.par.list$postScoreAlphaRRA <- TRUE
   # input.par.list$binSize <- 50
-  input.par.list$postScoreSlidingWindow <- 'yes'
+  input.par.list$postScoreSlidingWindow <- TRUE
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
   setwd(file.path(input.par.list$analysisDir))
@@ -8530,7 +8532,7 @@ none_y50__multiSimAnalysis <- function(input.par.list){
   # input.par.list$postScoringCREST <- 'yes'
   input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 50
-  input.par.list$postScoreSlidingWindow <- 'yes'
+  input.par.list$postScoreSlidingWindow <- TRUE
   write_specs_file(input.par.list, analysis.name)
   evaluate_multi_simulations(paste(analysis.name,'.txt', sep = ''))
   setwd(file.path(input.par.list$analysisDir))
@@ -8548,7 +8550,7 @@ multiSimGenomeScoreAnalysis <- function(input.par.list){
   # # input.par.list$postScoringCREST <- 'yes'
   # input.par.list$postScoreAlphaRRA <- TRUE
   # input.par.list$binSize <- 50
-  # input.par.list$postScoreSlidingWindow <- 'yes'
+  # input.par.list$postScoreSlidingWindow <- TRUE
   write_specs_file(input.par.list, analysis.name)
   evaluate_multi_simulations(paste(analysis.name,'.txt', sep = ''))
   setwd(file.path(input.par.list$analysisDir))
