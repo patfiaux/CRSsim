@@ -150,7 +150,9 @@ To set the `seqDepth` flag, you must provide a list object where each named list
 sim.flags$seqDepth <- list(repl1 = repl1.seqDepth, repl2 = repl2.seqDepth)
 ```
 11. Additionally, the simulations can simulate data sets where PCR duplicates are either accounted for or not. If you would like to generate a data set where duplicates are accounted for, set the `pcrDupl` flag to `FALSE` or `F`. 
-
+```r
+sim.flags$pcrDupl <- TRUE
+```
 12. You must also specify:
 * selection strength: how strong the effect of disrupting the gene of interest is (`high` or `low`).     
 * guide efficiency: what proportion of the guides successfully perturb their targets (`high`, `medium`, or `low`)
