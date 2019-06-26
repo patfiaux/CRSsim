@@ -353,7 +353,7 @@ sim.flags$crisprSystem <- 'CRISPRi'
 sim.flags$crisprEffectRange <- 500
 ```
 
-Both the guide efficiency and the enhancer strength are simulated from a beta distribution. The two parameters can be specified by setting `guideEfficienc` and `enhancerStrenth` to either `high`, `medium` or `low`. It is also possible to directly specify the two shape parameters of the beta distribution. As a general rule, if the shape parameters provided are large, the observed distribution variance is reduced. The larger shape 1 parameter is compared to shape 2 parameter, the more the distribution will be skewed towards 1. To visualize this phenomenon, you can also plot the histogram by randomly sampling from a beta-distribution and then subsequently changing the shape parameters. The default parameters are:
+Both the guide efficiency and the enhancer strength are simulated from a beta distribution. The two parameters can be specified by setting `guideEfficiency` and `enhancerStrength` to either `high`, `medium` or `low`. It is also possible to directly specify the two shape parameters of the beta distribution. As a general rule, if the shape parameters provided are large, the observed distribution variance is reduced. The larger shape 1 parameter is compared to shape 2 parameter, the more the distribution will be skewed towards 1. To visualize this phenomenon, you can also plot the histogram by randomly sampling from a beta-distribution and then subsequently changing the shape parameters. The default parameters are:
 
     - high: enhancerShape1 = 7, enhancerShape2 = 2
     
