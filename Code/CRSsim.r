@@ -78,14 +78,6 @@ set_default_flags <- function(input.list){
     out.list$guides <- read.csv(input.list$guideFile, stringsAsFactors = F)
     out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
   } else {
-
-    max.dist <- max(input.list$guides$end) - min(input.list$guides$start)
-    gene.start <-  min(input.list$guides$start) + round(max.dist/ 2)
-    gene.end <- round(gene.start + 0.05 * max.dist)
-    gene.exons <- data.frame(chrom = input.list$guides$chrom[1], start = gene.start,
-      end = gene.end, stringsAsFactors = F)
-    out.list$exon <- gene.exons
-
     if(! 'nrGuides' %in% names(input.list) | ! 'crisprSystem' %in% names(input.list) | ! 'stepSize' %in% names(input.list)){
       print('Error, missing flags for generating guides. Please specify: nrGuides, crisprSystem, stepSize')
     } else if(input.list$crisprSystem == 'dualCRISPR'){
@@ -100,6 +92,14 @@ set_default_flags <- function(input.list){
       out.list$guides <- generate_guide_info(list(nrGuides = input.list$nrGuides,
         crisprSystem = input.list$crisprSystem, stepSize = input.list$stepSize))
     }
+
+    max.dist <- max(out.list$guides$end) - min(out.list$guides$start)
+    gene.start <-  min(out.list$guides$start) + round(max.dist/ 2)
+    gene.end <- round(gene.start + 0.05 * max.dist)
+    gene.exons <- data.frame(chrom = out.list$guides$chrom[1], start = gene.start,
+      end = gene.end, stringsAsFactors = F)
+    out.list$exon <- gene.exons
+
   }
 
   if(! 'outDir' %in% input.list.names){
