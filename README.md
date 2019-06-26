@@ -65,7 +65,7 @@ BiocManager::install("GenomicRanges", version = "3.8")
 Here is a walkthrough of simulating data for a selection screen with sample data provided in `./CRSsim/Example_data`.
 
 Running a simulation will generate three .csv files:
-1. An **annotation file**, containing information about all the simulated guides (chromosome, start, end, label). The output file will be named `{output_name}_info.csv`.
+1. A **guide information file**, containing information about all the simulated guides (chromosome, start, end, label). The output file will be named `{output_name}_info.csv`.
 2. A **counts file**, containing the counts for each guide in each pool. The output file will be named `{output_name}_counts.csv`.
 3. An **enhancer file**, containing the locations of the simulated regulatory regions (e.g. enhancers). The output file will be named `{output_name}_enhancers.csv`.
 
@@ -78,7 +78,7 @@ source('/path/to/script/CRSsim.r')
 ```
 
 ### 1.2.2. Setting up simulation flags
-Running a simulation will generate an **annotation file**, a **counts file** and an **enhancer file** (described above).
+Running a simulation will generate a **guide information file**, a **counts file** and an **enhancer file** (described above).
 
 We have created an empty directory for you (`./CRSsim/Example_simulations`), within which you can generate these output files. Navigate into this directory and begin setting the option flags. There are several different flags which have no default arguments and must be supplied by the user. Below is an outline on how to set these required flags.
 
@@ -181,7 +181,8 @@ sim.flags$poolNames <- c('input', 'high', 'medium', 'low')
 ```
 3. The sequencing depth must also be specified for each pool in each replicate. 
 ```r
-sim.flags$seqDepth <- list(repl1 = rep(18e6, 4), repl2 = rep(18e6, 4) )
+sim.flags$seqDepth <- list(repl1 = rep(nrow(sim.flags$guides) * 15, 4), 
+                           repl2 = rep(nrow(sim.flags$guides) * 15, 4) )
 ```
 
 ## Keep in mind!
@@ -275,7 +276,7 @@ analysis.specs <- list()
 ```r
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
-3. Specify the paths to the annotation file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. Refer to [RELICS repo](https://github.com/patfiaux/RELICS) for information about file formats.
+3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. Refer to [RELICS repo](https://github.com/patfiaux/RELICS/blob/master/README.md#input-data-format) for information about file formats.
 ```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
 analysis.specs$sgRNAInfoFileLoc <- '../Example_data/Example_simulation_info.csv'
@@ -295,7 +296,7 @@ analysis.specs$repl_groups <- '1,2;3,4'
 analysis.specs$glmm_positiveTraining <- 'exon'
 analysis.specs$glmm_negativeTraining <- 'neg' 
 ```
-6. For edgeR, DESeq2, and fold change, select the pools to be compared against one another. Pools are referenced by their corresponding column index in the count file.
+6. For edgeR, DESeq2, and fold change, select the pools to be compared against one another. Pools are referenced by their corresponding column index in the count file. For DESeq2 and edgeR, `Group1` refers to the pools where an enrichment of guides is expected. In this case we're analyzing a selection screen where guides targeting regulatory elements drop out, so relatively speaking they will be enriched in the `before` pools
 ```r
 analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
