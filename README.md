@@ -143,7 +143,7 @@ sim.flags$enhancerSize <- 50  # base pairs
 10. Specify the sequencing depth for each of the pools. Here, the parameters have been set such that the average guide count is 15. A sequencing depth for each pool in each replicate must be defined:
 ```r
 repl1.seqDepth <- c(nrow(repl1.seqDepth) * 15, nrow(repl1.seqDepth) * 15) # set depths for 'before' and 'after' pools of replicate 1
-repl2.seqDepth <- c(nrow(repl1.seqDepth) * 15, nrow(repl1.seqDepth) * 15) # set depths for 'before' and 'after' pools of replicate 1
+repl2.seqDepth <- c(nrow(repl1.seqDepth) * 15, nrow(repl1.seqDepth) * 15) # set depths for 'before' and 'after' pools of replicate 2
 ```
 To set the `seqDepth` flag, you must provide a list object where each named list entry represents a replicate and its corresponding sequencing depth(s). 
 ```r
@@ -378,7 +378,7 @@ example.rate <- before.repl1.par$rate              # rate = 76.5
 example.dispersion <- before.repl1.par$dispersion  # dispersion = 2.6
 example.eta <- before.repl1.par$eta                # eta = 1e-4
 
-# to generate a ZINB distribution with 15000 guides
+# to generate a ZINB distribution with 10000 guides
 before.repl1.simulated <- create_ZINB_shape(10000, example.eta, example.rate, example.dispersion)
 before.repl2.simulated <- create_ZINB_shape(10000, example.eta, example.rate, example.dispersion)
 
