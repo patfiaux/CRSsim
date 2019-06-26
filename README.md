@@ -289,7 +289,7 @@ Top of guide information file: Example_simulation_info.csv
 
 Top of guide count file: Example_simulation_counts.csv
 
-| sim1_repl1_before	| sim1_repl1_after	| sim1_repl2_before	| sim1_repl2_after |
+| repl1_before	| repl1_after	| repl2_before	| repl2_after |
 |----------|----------|----------|----------|
 | 15 |	6 |	11 |	14 |
 | 8 |	1 |	6 |	5 |
@@ -309,18 +309,19 @@ analysis.specs$Method <- c('RELICS-search', 'FoldChange', 'edgeR', 'DESeq2')
 source('/path/to/script/RELICS.r')
 source('/path/to/script/RELICS_performance.r')
 ```
-RELICS analysis instructions can be found [here](https://github.com/patfiaux/RELICS/blob/master/README.md#quickstart-with-example-data).
+Each pool in a replicate is separated by a comma, each replicate is separated by a semi-colon. Detail for the RELICS analysis instructions can be found [here](https://github.com/patfiaux/RELICS/blob/master/README.md#quickstart-with-example-data).
 ```r
 analysis.specs$repl_groups <- '1,2;3,4'
 analysis.specs$glmm_positiveTraining <- 'exon'
 analysis.specs$glmm_negativeTraining <- 'neg' 
 ```
-6. For edgeR, DESeq2, and fold change, select the pools to be compared against one another. Pools are referenced by their corresponding column index in the count file. For DESeq2 and edgeR, `Group1` refers to the pools where an enrichment of guides is expected. In this case we're analyzing a selection screen where guides targeting regulatory elements drop out, so relatively speaking they will be enriched in the `before` pools
+6. For edgeR, DESeq2, and fold change, select the pools to be compared against one another. Pools are referenced by their corresponding column index in the count file. For DESeq2 and edgeR, `Group1` refers to the pools where an enrichment of guides is expected. In this case we're analyzing a selection screen where guides targeting regulatory elements drop out, so relatively speaking they will be enriched in the `before` pools.
+For fold change, `Group1` is the numerator and `Group2` the denominator. Log10 fold change is calculated.
 ```r
 analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
 ```
-7. For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondence) or if there is an imbalance between the groups.
+7. For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondence) or if there is an imbalance between the groups. n the case of the latter, all counts from `Group1` and `Group2` are combined respectively before calculating the fold change.
 ```r
 analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
 ```
