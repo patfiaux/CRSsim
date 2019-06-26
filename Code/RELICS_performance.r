@@ -6635,7 +6635,7 @@ RELICS_function_generator <- function(input.obs, input.beta, input.tau,
 
 # calculates fold change between two groups
 # by default a pseudo count of 1 is added everywhere
-# if the samples are paired ($foldChangePaired == 'yes'), fold change is calculated
+# if the samples are paired ($foldChangePaired == TRUE), fold change is calculated
 #   per paired sample and then averaged across samples
 # if samples are not paired the counts per groups are averaged and one fold change
 #   between the average is taken
@@ -6649,7 +6649,7 @@ fold_change_analysis <- function(in_counts,in_info,in_specs){
   log10.mean.ratio <- c()
   log2.mean.ratio <- c()
 
-  if(in_specs$foldChangePaired == 'yes'){
+  if(in_specs$foldChangePaired){ # == 'yes'){
     count.ratios <- as.data.frame(norm.counts[,in_specs$new_grp1] / norm.counts[,in_specs$new_grp2], stringsAsFactors = FALSE)
     log10.ratios <- log10(count.ratios)
     log10.mean.ratio <- rowMeans(log10.ratios)
@@ -6665,7 +6665,7 @@ fold_change_analysis <- function(in_counts,in_info,in_specs){
   out.df <- cbind.data.frame(rawScores = log10.mean.ratio, formatScores = log10.mean.ratio,
     log2_rate_ratio = log2.mean.ratio, stringsAsFactors = FALSE)
 
-  if(in_specs$foldChangePaired == 'yes'){
+  if(in_specs$foldChangePaired){ # == 'yes'){
     for(i in 1:ncol(log10.ratios)){
       out.df[[paste0('repl', i, '_fc')]] <- log10.ratios[,i]
     }
@@ -7939,7 +7939,7 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
       out_specs_list$Method <- strsplit(strsplit(spec,':')[[1]][2],',')[[1]]
     }
     if(spec_id == 'foldChangePaired'){
-      out_specs_list$foldChangePaired <- strsplit(spec,':')[[1]][2]
+      out_specs_list$foldChangePaired <- as.logical(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'Group1'){
       out_specs_list$Group1 <- as.numeric(strsplit(strsplit(spec,':')[[1]][2],',')[[1]])
@@ -8428,7 +8428,7 @@ create_default_specs <- function(input.name){
   default.list$CRISPReffectRange <- 20
   default.list$genePosFileLoc <- 'genes.csv'
   default.list$Method <- c('NB','edgeR','FoldChange','ZINB', 'NB-GLMM','Viterbi', 'Frwd-Bkwd')
-  default.list$foldChangePaired <- 'yes'
+  default.list$foldChangePaired <- TRUE
   default.list$evaluatePerformance <- 'yes'
   default.list$plotSeparateChroms <- 'yes'
   default.list$labelHierarchy <-  c('chr','neg','exon')
@@ -8449,7 +8449,7 @@ create_default_specs <- function(input.name){
 # analysis.specs$CountFileLoc <- '../formatted_guide_Unique.csv'
 # analysis.specs$sgRNAInfoFileLoc <- '../final_guide_regionInfo.csv'
 # analysis.specs$genePosFileLoc <- '/iblm/netapp/home/pfiaux/CREST_seq_data/Data/gata3_hg37_formatted_unique_exon_regions.csv'
-# analysis.specs$foldChangePaired <- 'no'
+# analysis.specs$foldChangePaired <- FALSE
 # analysis.specs$zoomRange <- '../GATA3_zoom_region1.csv'
 # analysis.specs$positiveLabels <- c('exon1','exon2','exon3','exon4','exon5','exon6')
 # analysis.specs$labelHierarchy <- c('chr','neg','exon1','exon2','exon3','exon4','exon5','exon6')
