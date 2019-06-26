@@ -213,6 +213,46 @@ set_default_flags <- function(input.list){
     break()
   }
 
+  if(out.list$selectionScreen){
+    # add the second sequencing depth parameter
+    temp.seq.depth <- out.list$seqDepth
+
+    adj.seq.depth <- lapply(temp.seq.depth, function(x){
+      return(c(x, x[length(x)]))
+    })
+
+    out.list$seqDepth <- adj.seq.depth
+    if('selectionStrength' %in% input.list.names){
+      if(out.list$selectionStrength == 'high'){
+        out.list$posSortingFrequency <- c(1, 95)
+        out.list$negSortingFrequency <- c(5, 95)
+      } else if(out.list$selectionStrength == 'low'){
+        out.list$posSortingFrequency <- c(4, 95)
+        out.list$negSortingFrequency <- c(5, 95)
+      } else {
+        print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
+        break()
+      }
+    } else if(! 'posSortingFrequency' %in% names(out.list)){
+      print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
+      break()
+    }
+  } else {
+      if('selectionStrength' %in% input.list.names){
+        if(out.list$selectionStrength == 'high'){
+          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
+          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+        } else if(out.list$selectionStrength == 'low'){
+          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 5)*0.5
+          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+        } else {
+          print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
+        }
+      } else if(! 'posSortingFrequency' %in% names(out.list)){
+        print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
+      }
+  }
+
   if(! 'enhancerShape1' %in% names(out.list)){
     print('Error: please specify valid enhancerStrenth (high, medium, low) or set the parameters for enhancerShape1 manually')
     break()
