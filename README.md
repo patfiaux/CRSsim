@@ -299,7 +299,7 @@ Depending on the CRISPR system used, the range of perturbation effect will be di
 
 In case of a `dualCRISPR` system, an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
 ```r
-analysis.specs$crisprSystem <- 'CRISPRi' # other potions: CRISPRcas9, CRISPRa, dualCRISPR
+analysis.specs$crisprSystem <- 'CRISPRi' # other options: CRISPRcas9, CRISPRa, dualCRISPR
 analysis.specs$crisprEffectRange <- 1000
 ```
 
