@@ -123,7 +123,7 @@ example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv',
 sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
                                    before_2 = example.counts$before_repl2)
 ```  
-6. Specify the screen type. The user can specify one of two screen types: either a `selectionScreen` as shown here  or a `FACSscreen`, where cells are sorted into different pools. See [FACS screen simulation](https://github.com/patfiaux/CRSsim#123-facs-screen-simulation-quickstart-with-example-data) for an example of simulating a FACS screen.
+6. Specify the screen type. The user can specify one of two screen types: either a `selectionScreen` as shown here  or a `FACSscreen`, where cells are sorted into different pools. See [FACS screen simulation](https://github.com/patfiaux/CRSsim#123-simulate-a-facs-screen-with-sample-data) for an example of simulating a FACS screen.
 ```r
 sim.flags$selectionScreen <- TRUE
 ```
