@@ -2138,7 +2138,9 @@ post_score_calculation <- function(input.list, input.specs){
       out.list <- c(out.list, RRA_wrapper(input.list, input.specs, pSC.path, 'CRESTrra'))
     }
     if('postScoreAlphaRRA' %in% names(input.specs)){
-      out.list <- c(out.list, alphaRRA_wrapper(input.list, input.specs))
+      if(input.specs$postScoreAlphaRRA){
+        out.list <- c(out.list, alphaRRA_wrapper(input.list, input.specs))
+      }  
     }
     if('postScoreGuideWindowRRA' %in% names(input.specs)){
       out.list <- c(out.list, guideWindowRRA_wrapper(input.list, input.specs))
@@ -8046,7 +8048,7 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
       out_specs_list$postScoreRRA <- strsplit(spec,':')[[1]][2]
     }
     if(spec_id == 'postScoreAlphaRRA'){
-      out_specs_list$postScoreAlphaRRA <- strsplit(spec,':')[[1]][2]
+      out_specs_list$postScoreAlphaRRA <- as.logical(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'postScoreSlidingWindow'){
       out_specs_list$postScoreSlidingWindow <- strsplit(spec,':')[[1]][2]
@@ -8508,7 +8510,7 @@ none_y50_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   # #input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   # input.par.list$binSize <- 50
   input.par.list$postScoreSlidingWindow <- 'yes'
   write_specs_file(input.par.list, analysis.name)
@@ -8526,7 +8528,7 @@ none_y50__multiSimAnalysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   # input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 50
   input.par.list$postScoreSlidingWindow <- 'yes'
   write_specs_file(input.par.list, analysis.name)
@@ -8544,7 +8546,7 @@ multiSimGenomeScoreAnalysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   # input.par.list$postScoringAnalysis <- 'yes'
   # # input.par.list$postScoringCREST <- 'yes'
-  # input.par.list$postScoreAlphaRRA <- 'yes'
+  # input.par.list$postScoreAlphaRRA <- TRUE
   # input.par.list$binSize <- 50
   # input.par.list$postScoreSlidingWindow <- 'yes'
   write_specs_file(input.par.list, analysis.name)
@@ -8610,7 +8612,7 @@ none_y200_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 200
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
@@ -8627,7 +8629,7 @@ none_y500_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 500
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
@@ -8676,7 +8678,7 @@ none_y1500_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 1500
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
@@ -8693,7 +8695,7 @@ none_y3000_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 3000
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
@@ -8710,7 +8712,7 @@ none_y5000_analysis <- function(input.par.list){
   input.par.list$dataName <- analysis.name
   input.par.list$postScoringAnalysis <- 'yes'
   input.par.list$postScoringCREST <- 'yes'
-  input.par.list$postScoreAlphaRRA <- 'yes'
+  input.par.list$postScoreAlphaRRA <- TRUE
   input.par.list$binSize <- 5000
   write_specs_file(input.par.list, analysis.name)
   analyze_data(paste(analysis.name,'.txt', sep = ''))
