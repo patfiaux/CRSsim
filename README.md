@@ -277,6 +277,30 @@ analysis.specs <- list()
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
 3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. Refer to [RELICS repo](https://github.com/patfiaux/RELICS/blob/master/README.md#input-data-format) for information about file formats.
+
+Top of guide information file: Example_simulation_info.csv
+
+| chrom | start | end | label |
+|----------|----------|----------|----------|
+| chr8	| chr	| 128703371 |	128703391 |
+| chr8	| chr	| 128703511	| 128703531 |
+| chr8	| chr	| 128703521	| 128703541 |
+| chr8	| chr | 128703539	| 128703559 |
+
+| chr8 | 128704468 | 128704488 | chr |
+| chr8 | 128704469 | 128704489 | chr |
+| NA | NA | NA | neg |
+| chr8 | 128704482 | 128704502 | exon |
+
+Top of guide count file: Example_simulation_counts.csv
+
+| repl1_input | repl1_high | repl1_med | repl1_low | repl2_input | repl2_high | repl2_med | repl2_low |
+|----------|----------|-------|------- |------|------|------|------|
+| 11 | 9 | 12 | 11 | 152 | 119 | 189 | 102 |
+| 68 | 81 | 39 | 67 | 360 | 339 | 280 | 821 |
+| 96 | 89 | 109 | 17 | 3 | 4 | 5 | 0 |
+| 104 | 97 | 116 | 38 | 190 | 198 | 194 | 23 |
+
 ```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
 analysis.specs$sgRNAInfoFileLoc <- '../Example_data/Example_simulation_info.csv'
