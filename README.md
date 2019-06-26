@@ -72,6 +72,7 @@ Running a simulation will generate three .csv files:
  - 'chr': guides targeting the region of interest but not overlapping with either an exon or an enhancer
 
 2. A **counts file**, containing the counts for each guide in each pool. The output file will be named `{output_name}_counts.csv`. Each row corresponds to a guide, each column to a pool, and each number to the number of times a guide was observed in a pool.
+
 3. An **enhancer file**, containing the locations of the simulated regulatory regions (e.g. enhancers). The output file will be named `{output_name}_enhancers.csv`. Each row corresponds to an enhancer.
 
 Follow the steps below to simulate data for a selection screen. 
@@ -85,7 +86,7 @@ source('/path/to/script/CRSsim.r')
 ### 1.2.2. Setting up simulation flags
 Running a simulation will generate a **guide information file**, a **counts file** and an **enhancer file** (described above).
 
-We have created an empty directory for you (`./CRSsim/Example_simulations`), within which you can generate these output files. Navigate into this directory and begin setting the option flags. There are several different flags which have no default arguments and must be supplied by the user. Below is an outline on how to set these required flags.
+After sourcing the CRSsim script you can begin setting the option flags. There are several different flags which have no default arguments and must be supplied by the user. Below is an outline on how to set these required flags.
 
 1. Flags are set up as an R list object. Run the following command in R to create this object:
 ``` r
@@ -97,14 +98,14 @@ sim.flags$simName <- 'Example_simulation'
 ```
 3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). The input should be a data frame object with columns for chromosome, start position and end position labeled `chrom`, `start`, and `end`, respectively. 
 
-| chrom | start | end |
+ | chrom | start | end |
 |----------|----------|----------|
 | chr8 | 128703371 | 128703391 |
 | chr8 | 128703511 | 128703531 |
 | chr8 | 128703521 | 128703541 |
 | chr8 | 128703539 | 128703559 |
 
-Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+ Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
