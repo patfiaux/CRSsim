@@ -74,6 +74,25 @@ set_default_flags <- function(input.list){
   out.list <- input.list
   input.list.names <- names(input.list)
 
+  if(input.list$guideFile %in% names(input.list)){
+    out.list$guides <- read.csv(input.list$guideFile, stringsAsFactors = F)
+  } else {
+    if(! c('nrGuides', 'crisprSystem', 'stepSize') %in% names(input.list)){
+      print('Error, missing flags for generating guides. Please specify: nrGuides, crisprSystem, stepSize')
+    } else if(input.list$crisprSystem == 'dualCRISPR'){
+      if(! 'deletionSize' %in% names(input.list)){
+        print('Error. deletionSize must be specified for dualCRISPR screens')
+      } else {
+        out.list$guides <- generate_guide_info(list(nrGuides = input.list$nrGuides,
+          crisprSystem = input.list$crisprSystem, stepSize = input.list$stepSize,
+          deletionSize = input.list$deletionSize))
+      }
+    } else {
+      out.list$guides <- generate_guide_info(list(nrGuides = input.list$nrGuides,
+        crisprSystem = input.list$crisprSystem, stepSize = input.list$stepSize))
+    }
+  }
+
   out.list$guides <- read.csv(input.list$guides, stringsAsFactors = F)
   out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
 
