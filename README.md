@@ -183,8 +183,8 @@ sim.flags$poolNames <- c('input', 'high', 'medium', 'low')
 ```
 3. The sequencing depth must also be specified for each pool in each replicate. 
 ```r
-sim.flags$seqDepth <- list(repl1 = rep(nrow(sim.flags$guides) * 15, 4), 
-                           repl2 = rep(nrow(sim.flags$guides) * 15, 4) )
+sim.flags$seqDepth <- list(repl1 = rep(nrow(example.counts) * 15, 4), 
+                           repl2 = rep(nrow(example.counts) * 15, 4) )
 ```
 
 ## Keep in mind!
