@@ -76,8 +76,17 @@ set_default_flags <- function(input.list){
 
   if('guideFile' %in% names(input.list)){
     out.list$guides <- read.csv(input.list$guideFile, stringsAsFactors = F)
+    out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
   } else {
-    if(! c('nrGuides', 'crisprSystem', 'stepSize') %in% names(input.list)){
+
+    max.dist <- max(input.list$guides$end) - min(input.list$guides$start)
+    gene.start <-  min(input.list$guides$start) + round(max.dist/ 2)
+    gene.end <- round(gene.start + 0.05 * max.dist)
+    gene.exons <- data.frame(chrom = input.list$guides$chrom[1], start = gene.start,
+      end = gene.end, stringsAsFactors = F)
+    out.list$exon <- gene.exons
+
+    if(! 'nrGuides' %in% names(input.list) | ! 'crisprSystem' %in% names(input.list) | ! 'stepSize' %in% names(input.list)){
       print('Error, missing flags for generating guides. Please specify: nrGuides, crisprSystem, stepSize')
     } else if(input.list$crisprSystem == 'dualCRISPR'){
       if(! 'deletionSize' %in% names(input.list)){
@@ -93,7 +102,7 @@ set_default_flags <- function(input.list){
     }
   }
 
-  out.list$guides <- read.csv(input.list$guides, stringsAsFactors = F)
+  # out.list$guides <- read.csv(input.list$guides, stringsAsFactors = F)
   out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
 
   if(! 'outDir' %in% input.list.names){
@@ -160,74 +169,6 @@ set_default_flags <- function(input.list){
       print('Error: please specify valid guideEfficiency (high, medium, low)')
       break()
     }
-  }
-
-  # if('selectionScreen' %in% input.list.names){
-  #   if(out.list$selectionScreen != 'yes'){
-  #     print('Specified FACS screen')
-  #     out.list$FACSscreen <- 'yes'
-  #     out.list$selectionScreen <- NULL
-  #   } else {
-  #
-  #     # add the second sequencing depth parameter
-  #     temp.seq.depth <- out.list$seqDepth
-  #
-  #     adj.seq.depth <- lapply(temp.seq.depth, function(x){
-  #       return(c(x, x[length(x)]))
-  #     })
-  #
-  #     out.list$seqDepth <- adj.seq.depth
-  #
-  #     if('selectionStrength' %in% input.list.names){
-  #       if(out.list$selectionStrength == 'high'){
-  #         out.list$posSortingFrequency <- c(1, 95)
-  #         out.list$negSortingFrequency <- c(5, 95)
-  #       } else if(out.list$selectionStrength == 'low'){
-  #         out.list$posSortingFrequency <- c(4, 95)
-  #         out.list$negSortingFrequency <- c(5, 95)
-  #       } else {
-  #         print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
-  #         break()
-  #       }
-  #     } else {
-  #       if(! 'posSortingFrequency' %in% input.list.names){
-  #         print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
-  #         break()
-  #       } else if(length(out.list$posSortingFrequency) == 1){
-  #         out.list$posSortingFrequency <- c(out.list$posSortingFrequency, 95)
-  #         out.list$negSortingFrequency <- c(out.list$negSortingFrequency, 95)
-  #       }
-  #     }
-  #   }
-  # }
-  # if('FACSscreen' %in% input.list.names){
-  #   if('selectionScreen' %in% names(out.list)){
-  #     print('Conflicting info about screen type. Pick either selectionScreen or FACSscreen')
-  #     break()
-  #   } else {
-  #     if('selectionStrength' %in% input.list.names){
-  #       if(out.list$selectionStrength == 'high'){
-  #         out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
-  #         out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
-  #       } else if(out.list$selectionStrength == 'low'){
-  #         out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 5)*0.5
-  #         out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
-  #       } else {
-  #         print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
-  #       }
-  #     } else if(! 'posSortingFrequency' %in% names(out.list)){
-  #       print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
-  #     }
-  #   }
-  # }
-
-  if(! 'exon' %in% input.list.names){
-    max.dist <- max(input.list$guides$end) - min(input.list$guides$start)
-    gene.start <-  min(input.list$guides$start) + round(max.dist/ 2)
-    gene.end <- round(gene.start + 0.05 * max.dist)
-    gene.exons <- data.frame(chrom = input.list$guides$chrom[1], start = gene.start,
-      end = gene.end, stringsAsFactors = F)
-    out.list$exon <- gene.exons
   }
 
   if(! ('screenType' %in% names(out.list) )){ #| 'FACSscreen' %in% names(out.list)) ){
