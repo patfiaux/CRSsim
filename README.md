@@ -323,7 +323,7 @@ analysis.specs$Group2 <- c(2,4)
 ```
 7. For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondence) or if there is an imbalance between the groups. n the case of the latter, all counts from `Group1` and `Group2` are combined respectively before calculating the fold change.
 ```r
-analysis.specs$foldChangePaired <- 'yes' # else set to 'no'
+analysis.specs$foldChangePaired <- TRUE # else FALSE
 ```
 8. Specify that results should be evaluated based on a set of regions known to be true positives and true negatives
 ```r
@@ -467,13 +467,13 @@ sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ## 3.2 Advanced Analysis and performance evaluation
 To analyze data with MAGeCK as used by [Diao et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28417999), specify use of `alphaRRA` and the bins within which to tile the analyzed region. Note, `alphaRRA` will be applied to per-guide scores from all methods given by the `Method` flag.
 ```r
-analysis.specs$postScoreAlphaRRA <- 'yes'
+analysis.specs$postScoreAlphaRRA <- TRUE
 analysis.specs$binSize <- 50
 ```
 
 To combine guide scores using a sliding window as in [Fulco et al. 2016](https://www.ncbi.nlm.nih.gov/pubmed/27708057) or [Simeonov et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28854172), specify the number of guides to include per sliding window as well as the maximum window size (if the tiled deletion generates a 10KB gap it would not make sense to consider the entire region as one score).
 ```r
-analysis.specs$postScoreSlidingWindow <- 'yes'
+analysis.specs$postScoreSlidingWindow <- TRUE
 analysis.specs$guidePerSlidingWindow <- 15
 analysis.specs$maxWindowSize <- 8000
 ```
