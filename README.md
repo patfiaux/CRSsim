@@ -355,14 +355,14 @@ analyze_data('Example_performanceEval_specs.txt')
 
 ## 3.1 Advanced Simulations
 
-Guides and their targets can be simulated if not readily available. Both single-guide as well as dual-guide screens can be simulated. For both of these types, the number of guides (`nrGuides`) must be specified, as well as the screen type (`screenType`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`stepSize`).  
+Guides and their targets can be simulated if not readily available. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`stepSize`).  
 
-Possible `screenType` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualCRISPR`
+Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualCRISPR`
 
 If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
 
 ```r
-sim.flags$guides <- generate_guide_info(list(nrGuides = 10000, screenType = 'dualCRISPR', stepSize = 20, deletionSize = 1000))
+sim.flags$guides <- generate_guide_info(list(nrGuides = 10000, crisprSystem = 'dualCRISPR', stepSize = 20, deletionSize = 1000))
 ```
 
 The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
