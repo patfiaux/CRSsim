@@ -128,7 +128,7 @@ Specify the sequencing depth for each of the pools. Here, the parameters have be
 ```r
 sim.flags$seqDepth <- list(repl1 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15),
     repl2 = c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15))
-sim.flags$pcrDupl <- 'yes'
+sim.flags$pcrDupl <- TRUE
 ```
 
 Specify:
