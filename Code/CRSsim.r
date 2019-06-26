@@ -74,7 +74,7 @@ set_default_flags <- function(input.list){
   out.list <- input.list
   input.list.names <- names(input.list)
 
-  if(input.list$guideFile %in% names(input.list)){
+  if('guideFile' %in% names(input.list)){
     out.list$guides <- read.csv(input.list$guideFile, stringsAsFactors = F)
   } else {
     if(! c('nrGuides', 'crisprSystem', 'stepSize') %in% names(input.list)){
