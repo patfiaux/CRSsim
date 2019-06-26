@@ -74,6 +74,9 @@ set_default_flags <- function(input.list){
   out.list <- input.list
   input.list.names <- names(input.list)
 
+  out.list$guides <- read.csv(input.list$guides, stringsAsFactors = F)
+  out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
+
   if(! 'outDir' %in% input.list.names){
     out.list$outDir <- ''
   }
