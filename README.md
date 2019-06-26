@@ -287,19 +287,13 @@ Top of guide information file: Example_simulation_info.csv
 | chr8	| chr	| 128703521	| 128703541 |
 | chr8	| chr | 128703539	| 128703559 |
 
-| chr8 | 128704468 | 128704488 | chr |
-| chr8 | 128704469 | 128704489 | chr |
-| NA | NA | NA | neg |
-| chr8 | 128704482 | 128704502 | exon |
-
 Top of guide count file: Example_simulation_counts.csv
 
-| repl1_input | repl1_high | repl1_med | repl1_low | repl2_input | repl2_high | repl2_med | repl2_low |
-|----------|----------|-------|------- |------|------|------|------|
-| 11 | 9 | 12 | 11 | 152 | 119 | 189 | 102 |
-| 68 | 81 | 39 | 67 | 360 | 339 | 280 | 821 |
-| 96 | 89 | 109 | 17 | 3 | 4 | 5 | 0 |
-| 104 | 97 | 116 | 38 | 190 | 198 | 194 | 23 |
+| sim1_repl1_before	| sim1_repl1_after	| sim1_repl2_before	| sim1_repl2_after |
+| 15 |	6 |	11 |	14 |
+| 8 |	1 |	6 |	5 |
+| 8	| 6	 | 3	| 11 |
+| 15 |	16 |	8 |	9 |
 
 ```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
