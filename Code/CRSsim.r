@@ -28,16 +28,16 @@ counts_from_probs <- function(input.probs, input.distr){
 }
 
 # input.counts: veotr, number of guides in pool per guide
-# pcr.type: sequence with or without duplicates
+# pcr.duplicate: boolean, if true sequence with, else without duplicates
 # input.seq.depth: how deep to sequence
 # guide.nr: total number of guides (could have 0 counts for some, need to maintain guide order)
-sequence_pool <- function(input.counts, pcr.type, input.seq.depth, guide.nr){
+sequence_pool <- function(input.counts, pcr.duplicate, input.seq.depth, guide.nr){
 
   out.seq <- rep(0, guide.nr)  # initialize empty vector
   temp.obs <- rep(c(1:length(input.counts)), input.counts)  # guide id the number of times a guide is present
     # 1,1,1,2,3,3,3,3,4,4,5,5,5,...
 
-  if(pcr.type == 'duplicate' | pcr.type == 'yes'){
+  if(pcr.duplicate){ # == 'duplicate' | pcr.type == 'yes'){
     temp.sequenced <- table(sample(temp.obs, input.seq.depth, replace=TRUE))
   } else {
     if(length(temp.obs) < input.seq.depth){
@@ -57,13 +57,13 @@ sequence_pool <- function(input.counts, pcr.type, input.seq.depth, guide.nr){
 }
 
 # input.pools, data frame with counts per guide-id
-# pcr.type: with or without duplicates
+# pcr.duplicate: boolean, if true sequence with, else without duplicates
 # input.seq.depth: how deep to sequence
-experiment_sequencing <- function(input.pools, pcr.type, input.seq.depth){
+experiment_sequencing <- function(input.pools, pcr.duplicate, input.seq.depth){
   out.df <- c()
 
   for(i in 1:ncol(input.pools)){
-    temp.seq <- sequence_pool(input.pools[,i], pcr.type, input.seq.depth[i], nrow(input.pools))
+    temp.seq <- sequence_pool(input.pools[,i], pcr.duplicate, input.seq.depth[i], nrow(input.pools))
     out.df <- cbind(out.df, temp.seq)
   }
   return(out.df)
@@ -139,7 +139,7 @@ set_default_flags <- function(input.list){
       break()
     }
   }
-  if(! )
+
   # if('selectionScreen' %in% input.list.names){
   #   if(out.list$selectionScreen != 'yes'){
   #     print('Specified FACS screen')
