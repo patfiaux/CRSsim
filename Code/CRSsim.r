@@ -281,7 +281,7 @@ generate_guide_info <- function(input.list){
   guide.chrom <- rep('chr1', input.list$nrGuides)
   guide.start <- c()
   guide.end <- c()
-  if(input.list$screenType == 'dualCRISPR'){
+  if(input.list$crisprSystem == 'dualCRISPR'){
     guide.start <- 2000 + c(1:input.list$nrGuides) * input.list$stepSize
     guide.end <- guide.start + input.list$deletionSize
   } else {
