@@ -103,9 +103,9 @@ sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1,
   before_2 = example.counts$before_repl2)
 ```  
 
-Specify the screen type. The user can specify one of two screen types: either a `selectionScreen` as shown here  or a `FACSscreen`, where cells are sorted into different pools. See [FACS screen simulation](https://github.com/patfiaux/CRSsim#123-facs-screen-simulation-quickstart-with-example-data) for an example of simulating a FACS screen.
+Specify the screen type. The user can specify either a selection screen or a FACS screen. In the case of the former, set `selectionScreen` to TRUE, otherwise to FALSE. See [FACS screen simulation](https://github.com/patfiaux/CRSsim#123-facs-screen-simulation-quickstart-with-example-data) for an example of simulating a FACS screen.
 ```r
-sim.flags$selectionScreen <- 'yes'
+sim.flags$selectionScreen <- TRUE
 ```
 
 Add names for the different pools in each replicate. In this case, each replicate will have a *before* and an *after* selection pool. Their names will be: `before_repl1, after_repl1, before_repl2, ...`
@@ -151,9 +151,9 @@ simulate_data(sim.flags)
 ## 1.2.3 FACS screen simulation quickstart with example data
 Outlined below are the main differences to the flags set above
 
-Specify the type of screen as `FACSscreen` in your argument flags.
+Specify the type of screen as not being a `selectionScreen` in your argument flags.
 ```r
-sim.flags$FACSscreen <- 'yes'
+sim.flags$selectionScreen <- FALSE
 ```
 
 As in the selection screen example, each pool per replicate must be named. The difference in this example is that there will be more than one pool. Here an example where cells are sorted form an input pool into either a high, medium or low expression pool.
