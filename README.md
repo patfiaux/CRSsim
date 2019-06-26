@@ -344,8 +344,12 @@ before.repl2.simulated <- create_ZINB_shape(15000, example.eta, example.rate, ex
 sim.flags$inputGuideDistr <- cbind(before_1 = before.repl1.simulated, before_2 = before.repl2.simulated)
 ```  
 
-Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.<\br>
-By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.<\br>
+Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.
+
+
+By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.
+
+
 For dualCRISPR, the effect range is equivalent to the deletion size. The deletion size introduced by two guides must be represented by 'start' set as the target site of guide 1 and 'end' as the target site of guide 2.
 ```r
 # example for how to change the effect range of a CRISPR system used
@@ -424,13 +428,13 @@ sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ```
 
 ## 3.2 Advanced Analysis and performance evaluation
-To analyze data with MAGeCK as used by Diao et al. 2017, specify the usage of alphaRRA and the bins within which to tile the analyzed region. Note, alphaRRA will be applied to per-guide scoresfrom all methods given by the `$Method` flag.
+To analyze data with MAGeCK as used by [Diao et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28417999), specify use of `alphaRRA` and the bins within which to tile the analyzed region. Note, `alphaRRA` will be applied to per-guide scores from all methods given by the `Method` flag.
 ```r
 analysis.specs$postScoreAlphaRRA <- 'yes'
 analysis.specs$binSize <- 50
 ```
 
-To combine guide scores using a sliding window, as done by Fulco et al. 2016 or Simeonov et al. 2017 specify the nuber of guides to include per sliding window as well as the maximum window size (if tiling has a 10KB gap it would not make sense to consider the enire region as one score).
+To combine guide scores using a sliding window as in [Fulco et al. 2016](https://www.ncbi.nlm.nih.gov/pubmed/27708057) or [Simeonov et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28854172), specify the number of guides to include per sliding window as well as the maximum window size (if the tiled deletion generates a 10KB gap it would not make sense to consider the entire region as one score).
 ```r
 analysis.specs$postScoreSlidingWindow <- 'yes'
 analysis.specs$guidePerSlidingWindow <- 15
