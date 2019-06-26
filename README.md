@@ -256,7 +256,7 @@ BiocManager::install("DESeq2")
 ```
 
 ## 2.2 Analyze sample selection screen data
-We have provided sample selection screen data for analysis. This does not require the user to first simulate their own selection screen data; however, the example in [1.2](https://github.com/patfiaux/CRSsim#12-simulation-quickstart-with-example-data-selection-screen) walks through how to do this yourself.
+We have provided sample selection screen data for analysis. This does not require the user to first simulate their own selection screen data; however, the example in [1.2](https://github.com/patfiaux/CRSsim#12-simulate-a-selection-screen-with-sample-data) walks through how to do this yourself.
 
 For this example, we recommend navigating into the empty performance evaluation folder we have provided (`./CRSsim/Example_performanceEval`) and generating all output files there.
 
