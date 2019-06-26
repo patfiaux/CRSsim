@@ -986,8 +986,9 @@ evaluate_multi_simulations <- function(spec.file = NULL, score.file = NULL, labe
       region.prAUC.sim <- cbind(region.prAUC, rep(paste0('sim',sim), nrow(region.prAUC)))
       combined.region.prAUC <- rbind(combined.region.prAUC, region.prAUC.sim)
     }
+
     if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs.names$evaluate_perElement_Performance){
-      # print('Evaluate per region performance ...')
+      print('Evaluate performance ...')
       element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
       element.prAUC.sim <- cbind(element.prAUC, rep(paste0('sim',sim), nrow(element.prAUC)))
       combined.element.prAUC <- rbind(combined.element.prAUC, element.prAUC.sim)
@@ -1083,8 +1084,9 @@ analyze_data <- function(spec.file = NULL, label.file = NULL, data.dir = NULL){
     region.prAUC <- performanceEvaluation_perRegion_recording(final.score.list, analysis.specs)
   }
 
-  if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs.names$evaluate_perElement_Performance){
-    # print('Evaluate per region performance ...')
+  browser()
+  if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs$evaluate_perElement_Performance){
+    print('Evaluate performance ...')
     element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
     write.csv(element.prAUC, file = paste0(analysis.specs$dataName, '_perElement_method_eval.csv'), row.names = F )
     # element.prAUC.sim <- cbind(element.prAUC, rep(paste0('sim',sim), nrow(element.prAUC)))
