@@ -98,14 +98,14 @@ sim.flags$simName <- 'Example_simulation'
 ```
 3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). The input should be a data frame object with columns for chromosome, start position and end position labeled `chrom`, `start`, and `end`, respectively. 
 
- | chrom | start | end |
+| chrom | start | end |
 |----------|----------|----------|
 | chr8 | 128703371 | 128703391 |
 | chr8 | 128703511 | 128703531 |
 | chr8 | 128703521 | 128703541 |
 | chr8 | 128703539 | 128703559 |
 
- Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+&nbsp;Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
