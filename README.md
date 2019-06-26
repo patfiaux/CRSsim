@@ -101,9 +101,9 @@ sim.flags$simName <- 'Example_simulation'
 
 Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as $ \text{start} = \text{target site} - 20$ and $\text{end} = \text{target site}$. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
 ```r
-sim.flags$guides <- read.csv('../Example_data/Example_selectionScreen_info.csv', stringsAsFactors = F)
+sim.flags$guides <- '../Example_data/Example_selectionScreen_info.csv'
 ```
-4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a data frame object with the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
+4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
 | chrom | start | end |
 |----------|----------|----------|
 | chr8 | 128748314 | 128748869 |
@@ -111,14 +111,16 @@ sim.flags$guides <- read.csv('../Example_data/Example_selectionScreen_info.csv',
 | chr8 | 128752641 | 128753680 |
 
 ```r
-sim.flags$exon <- read.csv('../Example_data/Example_gene.csv', stringsAsFactors = F)
+sim.flags$exon <- '../Example_data/Example_gene.csv'
 ```
-5. Provide the original guide distribution for each replicate. This can be supplied by an existing data set, as demonstrated below. Here, we  supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. 
+5. Provide the original guide distribution for each replicate. The input is a data frame object and each column will be used to generate  the guide count dirstribution for a replicate. The guide counts can be supplied by an existing data set, as demonstrated below. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
 Another option is to generate the distributions using a zero-inflated negative binomial (ZINB) distribution. See [Advanced Simulations](https://github.com/patfiaux/CRSsim#31-advanced-simulations) for details about this option.
 ```r
 example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
+
+# note here: 'before_1' and 'before_2' are just placeholder names. They could be called something else.
 sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1, 
-  before_2 = example.counts$before_repl2)
+                                   before_2 = example.counts$before_repl2)
 ```  
 6. Specify the screen type. The user can specify one of two screen types: either a `selectionScreen` as shown here  or a `FACSscreen`, where cells are sorted into different pools. See [FACS screen simulation](https://github.com/patfiaux/CRSsim#123-facs-screen-simulation-quickstart-with-example-data) for an example of simulating a FACS screen.
 ```r
