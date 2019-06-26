@@ -139,64 +139,66 @@ set_default_flags <- function(input.list){
       break()
     }
   }
-  if('selectionScreen' %in% input.list.names){
-    if(out.list$selectionScreen != 'yes'){
-      print('Specified FACS screen')
-      out.list$FACSscreen <- 'yes'
-      out.list$selectionScreen <- NULL
-    } else {
+  if(! )
+  # if('selectionScreen' %in% input.list.names){
+  #   if(out.list$selectionScreen != 'yes'){
+  #     print('Specified FACS screen')
+  #     out.list$FACSscreen <- 'yes'
+  #     out.list$selectionScreen <- NULL
+  #   } else {
+  #
+  #     # add the second sequencing depth parameter
+  #     temp.seq.depth <- out.list$seqDepth
+  #
+  #     adj.seq.depth <- lapply(temp.seq.depth, function(x){
+  #       return(c(x, x[length(x)]))
+  #     })
+  #
+  #     out.list$seqDepth <- adj.seq.depth
+  #
+  #     if('selectionStrength' %in% input.list.names){
+  #       if(out.list$selectionStrength == 'high'){
+  #         out.list$posSortingFrequency <- c(1, 95)
+  #         out.list$negSortingFrequency <- c(5, 95)
+  #       } else if(out.list$selectionStrength == 'low'){
+  #         out.list$posSortingFrequency <- c(4, 95)
+  #         out.list$negSortingFrequency <- c(5, 95)
+  #       } else {
+  #         print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
+  #         break()
+  #       }
+  #     } else {
+  #       if(! 'posSortingFrequency' %in% input.list.names){
+  #         print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
+  #         break()
+  #       } else if(length(out.list$posSortingFrequency) == 1){
+  #         out.list$posSortingFrequency <- c(out.list$posSortingFrequency, 95)
+  #         out.list$negSortingFrequency <- c(out.list$negSortingFrequency, 95)
+  #       }
+  #     }
+  #   }
+  # }
+  # if('FACSscreen' %in% input.list.names){
+  #   if('selectionScreen' %in% names(out.list)){
+  #     print('Conflicting info about screen type. Pick either selectionScreen or FACSscreen')
+  #     break()
+  #   } else {
+  #     if('selectionStrength' %in% input.list.names){
+  #       if(out.list$selectionStrength == 'high'){
+  #         out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
+  #         out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+  #       } else if(out.list$selectionStrength == 'low'){
+  #         out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 5)*0.5
+  #         out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+  #       } else {
+  #         print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
+  #       }
+  #     } else if(! 'posSortingFrequency' %in% names(out.list)){
+  #       print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
+  #     }
+  #   }
+  # }
 
-      # add the second sequencing depth parameter
-      temp.seq.depth <- out.list$seqDepth
-
-      adj.seq.depth <- lapply(temp.seq.depth, function(x){
-        return(c(x, x[length(x)]))
-      })
-
-      out.list$seqDepth <- adj.seq.depth
-
-      if('selectionStrength' %in% input.list.names){
-        if(out.list$selectionStrength == 'high'){
-          out.list$posSortingFrequency <- c(1, 95)
-          out.list$negSortingFrequency <- c(5, 95)
-        } else if(out.list$selectionStrength == 'low'){
-          out.list$posSortingFrequency <- c(4, 95)
-          out.list$negSortingFrequency <- c(5, 95)
-        } else {
-          print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
-          break()
-        }
-      } else {
-        if(! 'posSortingFrequency' %in% input.list.names){
-          print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
-          break()
-        } else if(length(out.list$posSortingFrequency) == 1){
-          out.list$posSortingFrequency <- c(out.list$posSortingFrequency, 95)
-          out.list$negSortingFrequency <- c(out.list$negSortingFrequency, 95)
-        }
-      }
-    }
-  }
-  if('FACSscreen' %in% input.list.names){
-    if('selectionScreen' %in% names(out.list)){
-      print('Conflicting info about screen type. Pick either selectionScreen or FACSscreen')
-      break()
-    } else {
-      if('selectionStrength' %in% input.list.names){
-        if(out.list$selectionStrength == 'high'){
-          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
-          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
-        } else if(out.list$selectionStrength == 'low'){
-          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 5)*0.5
-          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
-        } else {
-          print('Specified selectionStrength not yet implemented. Pick either high or low or specify parameters manually')
-        }
-      } else if(! 'posSortingFrequency' %in% names(out.list)){
-        print('strength of selectionScreen has not been specified. Either set selectionStrength to high, low or specify the parameters manually')
-      }
-    }
-  }
   if(! 'exon' %in% input.list.names){
     max.dist <- max(input.list$guides$end) - min(input.list$guides$start)
     gene.start <-  min(input.list$guides$start) + round(max.dist/ 2)
@@ -206,8 +208,8 @@ set_default_flags <- function(input.list){
     out.list$exon <- gene.exons
   }
 
-  if(! ('selectionScreen' %in% names(out.list) | 'FACSscreen' %in% names(out.list)) ){
-    print('No info about screen type. Pick either selectionScreen or FACSscreen')
+  if(! ('selectionScreen' %in% names(out.list) )){ #| 'FACSscreen' %in% names(out.list)) ){
+    print('No info about screen type. Set selectionScreen to either TRUE or FALSE')
     break()
   }
 
@@ -395,7 +397,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
 
 
   effect.diff <- c()
-  if('selectionScreen' %in% names(input.frame)){
+  if(input.frame$selectionScreen){ #'selectionScreen' %in% names(input.frame)){
     effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
   } else {
     effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
@@ -437,7 +439,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
         temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
         temp.nonFunctional.cells <- temp.cells.with.guide - temp.functional.cells
 
-        if('selectionScreen' %in% names(input.frame)){
+        if(input.frame$selectionScreen){ #'selectionScreen' %in% names(input.frame)){
           temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff # + input.frame$posSortingFrequency
         } else {
           temp.functional.sorting.prob <- effect.diff + input.frame$negSortingFrequency
@@ -492,7 +494,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
           temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
           temp.nonFunctional.cells <- temp.cells.with.guide - temp.functional.cells
 
-          if('selectionScreen' %in% names(input.frame)){
+          if(input.frame$selectionScreen){ #'selectionScreen' %in% names(input.frame)){
             temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff * sort.factor[k] # + input.frame$posSortingFrequency
             # temp.functional.sorting.prob <- sort.factor[k] * effect.diff + input.frame$posSortingFrequency
           } else {
@@ -531,7 +533,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
       input.frame$pcrDupl, input.frame$seqDepth[[i]])
 
     repl.sequenced.filtered <- repl.sequenced
-    if('selectionScreen' %in% names(input.frame)){
+    if(input.frame$selectionScreen){ #'selectionScreen' %in% names(input.frame)){
       repl.sequenced.filtered <- repl.sequenced[,c(1,2)]
     }
 
