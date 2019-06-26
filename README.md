@@ -71,8 +71,8 @@ Running a simulation will generate three .csv files:
  - 'pos': guides overlapping enhancers. These are true positives
  - 'chr': guides targeting the region of interest but not overlapping with either an exon or an enhancer
 
-2. A **counts file**, containing the counts for each guide in each pool. The output file will be named `{output_name}_counts.csv`.
-3. An **enhancer file**, containing the locations of the simulated regulatory regions (e.g. enhancers). The output file will be named `{output_name}_enhancers.csv`.
+2. A **counts file**, containing the counts for each guide in each pool. The output file will be named `{output_name}_counts.csv`. Each row corresponds to a guide, each column to a pool, and each number to the number of times a guide was observed in a pool.
+3. An **enhancer file**, containing the locations of the simulated regulatory regions (e.g. enhancers). The output file will be named `{output_name}_enhancers.csv`. Each row corresponds to an enhancer.
 
 Follow the steps below to simulate data for a selection screen. 
 
@@ -104,7 +104,7 @@ sim.flags$simName <- 'Example_simulation'
 | chr8 | 128703521 | 128703541 |
 | chr8 | 128703539 | 128703559 |
 
-Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as $ \text{start} = \text{target site} - 20$ and $\text{end} = \text{target site}$. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as $`\text{start} = \text{target site} - 20$ and $\text{end} = \text{target site}`$. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
