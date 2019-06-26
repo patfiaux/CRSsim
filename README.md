@@ -105,7 +105,8 @@ sim.flags$simName <- 'Example_simulation'
 | chr8 | 128703521 | 128703541 |
 | chr8 | 128703539 | 128703559 |
 
-&nbsp;Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+&ensp;Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
