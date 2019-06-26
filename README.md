@@ -331,7 +331,7 @@ analysis.specs$foldChangePaired <- TRUE # else FALSE
 ```r
 analysis.specs$simulated_data <- TRUE # specify that the analysis is based on simulated data where the ground thruth is known
 analysis.specs$pos_regions <- '../Example_data/Example_simulation_enhancers.csv' # file location of all known positive regions
-analysis.specs$evaluate_perElement_Performance <- 'yes' # specify that the performance of different methods is to be evaluated
+analysis.specs$evaluate_perElement_Performance <- TRUE # specify that the performance of different methods is to be evaluated
 analysis.specs$positiveLabels <- 'pos' # label for regions which are true positives
 analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are true negatives
 ```
@@ -379,8 +379,8 @@ example.dispersion <- before.repl1.par$dispersion  # dispersion = 2.6
 example.eta <- before.repl1.par$eta                # eta = 1e-4
 
 # to generate a ZINB distribution with 15000 guides
-before.repl1.simulated <- create_ZINB_shape(15000, example.eta, example.rate, example.dispersion)
-before.repl2.simulated <- create_ZINB_shape(15000, example.eta, example.rate, example.dispersion)
+before.repl1.simulated <- create_ZINB_shape(10000, example.eta, example.rate, example.dispersion)
+before.repl2.simulated <- create_ZINB_shape(10000, example.eta, example.rate, example.dispersion)
 
 # combine the two simulated replicates and set them as input distributions
 sim.flags$inputGuideDistr <- cbind(before_1 = before.repl1.simulated, before_2 = before.repl2.simulated)
@@ -416,10 +416,10 @@ sim.flags$guideEfficiency <- 'high'
 sim.flags$enhancerStrenth <- 'high'
 
 # the above is equivalent to what's below
-sim.flags$enhancerShape1 <- 7
-sim.flags$enhancerShape2 <- 2
-sim.flags$guideShape1 <- 7
-sim.flags$guideShape2 <- 2
+sim.flags$enhancerShape1 <- 5
+sim.flags$enhancerShape2 <- 5
+sim.flags$guideShape1 <- 5
+sim.flags$guideShape2 <- 5
 ```
 
 
