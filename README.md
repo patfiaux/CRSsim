@@ -142,8 +142,8 @@ sim.flags$enhancerSize <- 50  # base pairs
 ```
 10. Specify the sequencing depth for each of the pools. Here, the parameters have been set such that the average guide count is 15. A sequencing depth for each pool in each replicate must be defined:
 ```r
-repl1.seqDepth <- c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15) # set depths for 'before' and 'after' pools of replicate 1
-repl2.seqDepth <- c(nrow(sim.flags$guides) * 15, nrow(sim.flags$guides) * 15) # set depths for 'before' and 'after' pools of replicate 1
+repl1.seqDepth <- c(nrow(repl1.seqDepth) * 15, nrow(repl1.seqDepth) * 15) # set depths for 'before' and 'after' pools of replicate 1
+repl2.seqDepth <- c(nrow(repl1.seqDepth) * 15, nrow(repl1.seqDepth) * 15) # set depths for 'before' and 'after' pools of replicate 1
 ```
 To set the `seqDepth` flag, you must provide a list object where each named list entry represents a replicate and its corresponding sequencing depth(s). 
 ```r
