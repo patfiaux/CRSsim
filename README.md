@@ -96,7 +96,7 @@ sim.flags <- list()
 ```r
 sim.flags$simName <- 'Example_simulation'
 ```
-3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see the [file format section](https://github.com/patfiaux/CRSsim#411-simulation-guides).
+3. Provide information about the intended guide targets. Either supply them directly by giving the .csv location as a string, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations)). For details about file format see the [file format section](https://github.com/patfiaux/CRSsim#411-simulation-guides).
 
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
