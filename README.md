@@ -96,17 +96,17 @@ sim.flags <- list()
 ```r
 sim.flags$simName <- 'Example_simulation'
 ```
-3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see the [file format scetion](https://github.com/patfiaux/CRSsim#411-simulation-guides):
+3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see the [file format section](https://github.com/patfiaux/CRSsim#411-simulation-guides).
 
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
-4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file. For file format see section [file format scetion](https://github.com/patfiaux/CRSsim#412-simulation-exons):
+4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file. For file format see section [file format section](https://github.com/patfiaux/CRSsim#412-simulation-exons).
 
 ```r
 sim.flags$exon <- '../Example_data/Example_gene.csv'
 ```
-5. Provide the original guide distribution for each replicate. The guide counts can be supplied by an existing data set, as demonstrated below. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
+5. Provide the original guide distribution for each replicate. The guide counts can be supplied by an existing data set, as demonstrated below. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. For details about file format see the [file format section](https://github.com/patfiaux/CRSsim#413-guide-counts-for-simulated-guide-distributions).
 Another option is to generate the distributions using a zero-inflated negative binomial (ZINB) distribution. See [Advanced Simulations](https://github.com/patfiaux/CRSsim#31-advanced-simulations) for details about this option.
 ```r
 example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
@@ -270,7 +270,7 @@ analysis.specs <- list()
 ```r
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
-3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. For file format details see [section 4]().
+3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. For file format details see [section 4.2](https://github.com/patfiaux/CRSsim#42-analysis-and-performance-evaluation).
 
 ```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
