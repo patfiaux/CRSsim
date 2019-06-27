@@ -456,8 +456,10 @@ pos_element_scores <- function(input.score.df, input.specs){
   pos.regions <- read.csv(input.specs$pos_regions, header = T, stringsAsFactors = F)
 
   guide.effect.size <- c()
+  # guide.effect.size <- input.specs$crisprEffectRange
+
   if(input.specs$crisprSystem == 'dualCRISPR'){
-    guide.effect.size <- 0
+    guide.effect.size <- input.specs$deletionSize
   } else {
     guide.effect.size <- input.specs$crisprEffectRange
   }
@@ -1084,7 +1086,6 @@ analyze_data <- function(spec.file = NULL, label.file = NULL, data.dir = NULL){
     region.prAUC <- performanceEvaluation_perRegion_recording(final.score.list, analysis.specs)
   }
 
-  browser()
   if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs$evaluate_perElement_Performance){
     print('Evaluate performance ...')
     element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
@@ -7867,6 +7868,7 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
   out_specs_list$InitialDispersion <- 0.5
   out_specs_list$RRAmaxPercent <- 0.1
   out_specs_list$CRISPReffectRange <- 20
+
   # default initial dispersion and zero-mass proportion estimate:
   out_specs_list$InitialDispersion <- 0.5
   out_specs_list$InitialEta <- 0.5
@@ -8120,9 +8122,6 @@ read_analysis_specs <- function(in_specs_loc, data.dir = NULL){
     }
     if(spec_id == 'RRAmaxPercent'){
       out_specs_list$RRAmaxPercent <- as.numeric(strsplit(strsplit(spec,':')[[1]][2],',')[[1]])
-    }
-    if(spec_id == 'CRISPReffectRange'){
-      out_specs_list$CRISPReffectRange <- as.numeric(strsplit(spec,':')[[1]][2])
     }
     if(spec_id == 'rraPermutNr'){
       out_specs_list$rraPermutNr <- as.numeric(strsplit(spec,':')[[1]][2])
