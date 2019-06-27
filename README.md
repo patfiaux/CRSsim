@@ -96,32 +96,17 @@ sim.flags <- list()
 ```r
 sim.flags$simName <- 'Example_simulation'
 ```
-3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). The input should be a data frame object with columns for chromosome, start position and end position labeled `chrom`, `start`, and `end`, respectively. 
-
-| chrom | start | end |
-|----------|----------|----------|
-| chr8 | 128703371 | 128703391 |
-| chr8 | 128703511 | 128703531 |
-| chr8 | 128703521 | 128703541 |
-| chr8 | 128703539 | 128703559 |
-
-Each row represents a different guide and its target site location. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here, we will supply the guide target information from `../Example_data/Example_selectionScreen_info.csv`:
+3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see below:
 
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
-4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
-
-| chrom | start | end |
-|----------|----------|----------|
-| chr8 | 128748314 | 128748869 |
-| chr8 | 128750493 | 128751265 |
-| chr8 | 128752641 | 128753680 |
+4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file. For file format see section below()
 
 ```r
 sim.flags$exon <- '../Example_data/Example_gene.csv'
 ```
-5. Provide the original guide distribution for each replicate. The input is a data frame object and each column will be used to generate  the guide count dirstribution for a replicate. The guide counts can be supplied by an existing data set, as demonstrated below. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
+5. Provide the original guide distribution for each replicate. The guide counts can be supplied by an existing data set, as demonstrated below. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
 Another option is to generate the distributions using a zero-inflated negative binomial (ZINB) distribution. See [Advanced Simulations](https://github.com/patfiaux/CRSsim#31-advanced-simulations) for details about this option.
 ```r
 example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
@@ -285,25 +270,7 @@ analysis.specs <- list()
 ```r
 analysis.specs$dataName <- 'Example_performanceEval'
 ```
-3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. Refer to [RELICS repo](https://github.com/patfiaux/RELICS/blob/master/README.md#input-data-format) for information about file formats.
-
-Top of guide information file: Example_simulation_info.csv
-
-| chrom | start | end | label |
-|----------|----------|----------|----------|
-| chr8	| chr	| 128703371 |	128703391 |
-| chr8	| chr	| 128703511	| 128703531 |
-| chr8	| chr	| 128703521	| 128703541 |
-| chr8	| chr | 128703539	| 128703559 |
-
-Top of guide count file: Example_simulation_counts.csv
-
-| repl1_before	| repl1_after	| repl2_before	| repl2_after |
-|----------|----------|----------|----------|
-| 15 |	6 |	11 |	14 |
-| 8 |	1 |	6 |	5 |
-| 8	| 6	 | 3	| 11 |
-| 15 |	16 |	8 |	9 |
+3. Specify the paths to the guide information file and the counts file generated in the simulation step. Here, we have provided example files so that the user does not have to run a full simulation prior to this example. For file format details see [section 4]().
 
 ```r
 analysis.specs$CountFileLoc <- '../Example_data/Example_simulation_counts.csv'
@@ -495,7 +462,7 @@ analysis.specs$maxWindowSize <- 8000
 ## 4.1 Simulations
 
 ### 4.1.1 Simulation guides
-If guides are directly provided by the user, the .csv file should have columns for chromosome, start position and end position labeled `chrom`, `start`, and `end`, respectively. All chromosome are given as a string. For `chrom` the spelling of the individual chromosomes not matter as long as the same chromosome has the same spelling ('chr8' and 'Chr8' will be recognized as two different chromosomes). `start` and `end` values are given as numbers. Here the top from the file provided at `../Example_data/Example_selectionScreen_info.csv`:
+If guides are directly provided by the user, the .csv file should have columns for chromosome, start position and end position labeled `chrom`, `start`, and `end`, respectively. All chromosome are given as a string. For `chrom` the spelling of the individual chromosomes not matter as long as the same chromosome has the same spelling ('chr8' and 'Chr8' will be recognized as two different chromosomes). `start` and `end` values are given as numbers. For Cas9, CRISPRi, and CRISPRa screens, the distance between the start and end sites should be set to something small, such as *start = target site - 20* and *end = target site*. Here the top from the file provided at `Example_selectionScreen_info.csv`:
 
 | chrom | start | end |
 |----------|----------|----------|
@@ -504,8 +471,7 @@ If guides are directly provided by the user, the .csv file should have columns f
 | chr8 | 128703521 | 128703541 |
 | chr8 | 128703539 | 128703559 |
 
-
-#### 4.1.2 Simulation exons
+### 4.1.2 Simulation exons
 If guide targets are provided for the simulations, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. All chromosome are given as a string. For `chrom` the spelling of the individual chromosomes not matter as long as the same chromosome has the same spelling ('chr8' and 'Chr8' will be recognized as two different chromosomes). `start` and `end` values are given as numbers. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
 
 | chrom | start | end |
@@ -524,7 +490,7 @@ sim.flags$inputGuideDistr <- cbind(before_1 = example.counts$before_repl1,
                                    before_2 = example.counts$before_repl2)
 ```  
 
-In the case above, `inputGuideDistr` look like the following:
+In the case above, `inputGuideDistr` looks like the following:
 
 | before_1	| before_2 |
 |----------|----------|
@@ -533,3 +499,25 @@ In the case above, `inputGuideDistr` look like the following:
 | 145	| 178 |
 | 305 |	248 |
 
+## 4.2 analysis and performance evaluation
+
+### 4.2.1 Guide count file
+The guide count file provided for analysis is a .csv file, where each column is a pool and each row the counts from a guide in a given pool (without guide names). The rows must match the guide information file (see below) such that guide in row 1 is the same across both files. The file should have a header, but the column nmaes do not matter. Top of example guide count file: Example_simulation_counts.csv
+
+| repl1_before	| repl1_after	| repl2_before	| repl2_after |
+|----------|----------|----------|----------|
+| 15 |	6 |	11 |	14 |
+| 8 |	1 |	6 |	5 |
+| 8	| 6	 | 3	| 11 |
+| 15 |	16 |	8 |	9 |
+
+
+### 4.2.2 Guide information file
+For the analysis the provided guide information file must contain the following: chromosome, start and end position as well as a guide label. The guide labels are provided as strings, same with the chromosome positions. Top of example guide information file Example_simulation_info.csv.
+
+| chrom | start | end | label |
+|----------|----------|----------|----------|
+| chr8	| chr	| 128703371 |	128703391 |
+| chr8	| chr	| 128703511	| 128703531 |
+| chr8	| chr	| 128703521	| 128703541 |
+| chr8	| chr | 128703539	| 128703559 |
