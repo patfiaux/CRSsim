@@ -96,12 +96,12 @@ sim.flags <- list()
 ```r
 sim.flags$simName <- 'Example_simulation'
 ```
-3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see below:
+3. Provide information about the intended guide targets. Either supply them directly, as is demonstrated here, or generate them within the script (see details under [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations). For details about file format see the [file format scetion](https://github.com/patfiaux/CRSsim#411-simulation-guides):
 
 ```r
 sim.flags$guideFile <- '../Example_data/Example_selectionScreen_info.csv'
 ```
-4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file. For file format see section below()
+4. If guide targets are provided as in step 3, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file. For file format see section [file format scetion](https://github.com/patfiaux/CRSsim#412-simulation-exons):
 
 ```r
 sim.flags$exon <- '../Example_data/Example_gene.csv'
