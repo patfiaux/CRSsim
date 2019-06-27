@@ -70,6 +70,7 @@ Running a simulation will generate three .csv files:
  - 'neg': non-targeting negative control guides
  - 'pos': guides overlapping enhancers. These are true positives
  - 'chr': guides targeting the region of interest but not overlapping with either an exon or an enhancer
+Note: Guides not overlapping any regulatory element are all generated using the same probability distribution. A small, random subset (default 300) is labelled as 'neg', the rest as 'chr'. See [Advanced Simulations](https://github.com/patfiaux/CRSsim/blob/master/README.md#31-advanced-simulations) for how to increase or decrease the number of negative controls
 
 2. A **counts file**, containing the counts for each guide in each pool. The output file will be named `{output_name}_counts.csv`. Each row corresponds to a guide, each column to a pool, and each number to the number of times a guide was observed in a pool.
 
@@ -250,7 +251,7 @@ BiocManager::install("DESeq2")
 ```
 
 ## 2.2 Analyze sample selection screen data
-We have provided sample selection screen data for analysis. This does not require the user to first simulate their own selection screen data; however, the example in [1.2](https://github.com/patfiaux/CRSsim#12-simulate-a-selection-screen-with-sample-data) walks through how to do this yourself.
+We have provided an example data set from a selection screen. This way you don't have to first simulate your own data; however, the example in [1.2](https://github.com/patfiaux/CRSsim#12-simulate-a-selection-screen-with-sample-data) walks through how to do this yourself.
 
 For this example, we recommend navigating into the empty performance evaluation folder we have provided (`./CRSsim/Example_performanceEval`) and generating all output files there.
 
@@ -297,7 +298,7 @@ For fold change, `Group1` is the numerator and `Group2` the denominator. Log10 f
 analysis.specs$Group1 <- c(1,3)
 analysis.specs$Group2 <- c(2,4)
 ```
-7. For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondence) or if there is an imbalance between the groups. n the case of the latter, all counts from `Group1` and `Group2` are combined respectively before calculating the fold change.
+7. For fold change, you need to specify whether the different pools are paired (from the same replicate with a 1-1 correspondence) or if there is an imbalance between the groups. In the case of the latter, all counts from `Group1` and `Group2` are combined respectively before calculating the fold change.
 ```r
 analysis.specs$foldChangePaired <- TRUE # else FALSE
 ```
@@ -315,7 +316,7 @@ analysis.specs$negativeLabels <- c('neg', 'chr') # labels for regions which are 
 In case of a `dualCRISPR` system, an arbitrary `crisprEffectRange` can be specified as RELICS will automatically use the deletion range between guide 1 and guide 2 as effect range.
 ```r
 analysis.specs$crisprSystem <- 'CRISPRi' # other options: CRISPRcas9, CRISPRa, dualCRISPR
-analysis.specs$crisprEffectRange <- 1000
+analysis.specs$crisprEffectRange <- 1000 # use $deletionSize if system is dualCRISPR
 ```
 
 10. Once you have your flags set, create a specification file using the `write_specs_file()` function. The arguments and their names will be written to this file for future reference. The two arguments that this function takes are the list of flags you just set (`analysis.specs`) and the desired name of the output file (`.txt` will be automatically used as the file extension, so do not include any file extension for this argument).
@@ -331,7 +332,7 @@ analyze_data('Example_performanceEval_specs.txt')
 
 ## 3.1 Advanced Simulations
 
-Guides and their targets can be simulated if not readily available. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`stepSize`).  
+3.1.1 **Generate guides and their targets**. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`stepSize`).  
 
 Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualCRISPR`
 
@@ -344,7 +345,12 @@ sim.flags$stepSize <- 20
 sim.flags$deletionSize <- 1000 # only used if $crisprSystem is 'dualCRISPR'
 ```
 
-The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
+3.1.2 To change the default **number of negative controls** set the `nrNeg` flag.
+```r
+sim.flags$nrNeg <- 300
+```
+
+3.1.3 **Generate guide distributions**.The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
 ```r
 # obtain ZINB parameters which descibe the distribution
 before.repl1.par <- obtain_ZINB_pars(example.counts$before_repl1)
@@ -360,20 +366,16 @@ before.repl2.simulated <- create_ZINB_shape(10000, example.eta, example.rate, ex
 sim.flags$inputGuideDistr <- cbind(before_1 = before.repl1.simulated, before_2 = before.repl2.simulated)
 ```  
 
-Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.
-
-
+3.1.4 **Set effect range**. Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.
 By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.
-
-
-For dualCRISPR, the effect range is equivalent to the deletion size. The deletion size introduced by two guides must be represented by 'start' set as the target site of guide 1 and 'end' as the target site of guide 2.
+For dualCRISPR, the effect range is equivalent to the deletion size. The deletion size introduced by two guides must be represented by 'start' set as the target site of guide 1 and 'end' as the target site of guide 2. Use the `deletionSize` flag when using `dualCRISPR`.
 ```r
 # example for how to change the effect range of a CRISPR system used
 sim.flags$crisprSystem <- 'CRISPRi'
 sim.flags$crisprEffectRange <- 500
 ```
 
-Both the guide efficiency and the enhancer strength are simulated from a beta distribution. The two parameters can be specified by setting `guideEfficiency` and `enhancerStrength` to either `high`, `medium` or `low`. It is also possible to directly specify the two shape parameters of the beta distribution. As a general rule, if the shape parameters provided are large, the observed distribution variance is reduced. The larger shape 1 parameter is compared to shape 2 parameter, the more the distribution will be skewed towards 1. To visualize this phenomenon, you can also plot the histogram by randomly sampling from a beta-distribution and then subsequently changing the shape parameters. The default parameters are:
+3.1.5 **Enhancer strength and guide efficiency**. Both the guide efficiency and the enhancer strength are simulated from a beta distribution. The two parameters can be specified by setting `guideEfficiency` and `enhancerStrength` to either `high`, `medium` or `low`. It is also possible to directly specify the two shape parameters of the beta distribution. As a general rule, if the shape parameters provided are large, the observed distribution variance is reduced. The larger shape 1 parameter is compared to shape 2 parameter, the more the distribution will be skewed towards 1. To visualize this phenomenon, you can also plot the histogram by randomly sampling from a beta-distribution and then subsequently changing the shape parameters. The default parameters are:
 
     - high: enhancerShape1 = 7, enhancerShape2 = 2
     
@@ -397,7 +399,7 @@ sim.flags$guideShape2 <- 5
 ```
 
 
-Selection strength: To understand the details of the selection strength it is helpful to have some understanding of the Dirichlet distribution. Both for the selection screen as well as for the FACS screen the probability of each guide being either selected or sorted into a given pool is given by a Dirichlet random variate. As an example:
+3.1.6 **Selection strength**. To understand the details of the selection strength it is helpful to have some understanding of the Dirichlet distribution. Both for the selection screen as well as for the FACS screen the probability of each guide being either selected or sorted into a given pool is given by a Dirichlet random variate. As an example:
 
 
 Cells are sorted into three pools: high, medium and low gene expression. The expected probability that a negative control will be sorted into each of the given pools are 0.48, 0.48, and 0.04, respectively. For each guide, this probability shifts slightly. The Dirichlet random variable provides this variation. All cells containing a negative control guide are subsequently assigned to each of the three pools with following probabilities:  `rdirichlet(1, c(48, 48, 4))`.
@@ -444,13 +446,14 @@ sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
 ```
 
 ## 3.2 Advanced Analysis and performance evaluation
-To analyze data with MAGeCK as used by [Diao et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28417999), specify use of `alphaRRA` and the bins within which to tile the analyzed region. Note, `alphaRRA` will be applied to per-guide scores from all methods given by the `Method` flag.
+
+3.2.1 **alphaRRA**. To analyze data with MAGeCK as used by [Diao et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28417999), specify use of `alphaRRA` and the bins within which to tile the analyzed region. Note, `alphaRRA` will be applied to per-guide scores from all methods given by the `Method` flag.
 ```r
 analysis.specs$postScoreAlphaRRA <- TRUE
 analysis.specs$binSize <- 50
 ```
 
-To combine guide scores using a sliding window as in [Fulco et al. 2016](https://www.ncbi.nlm.nih.gov/pubmed/27708057) or [Simeonov et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28854172), specify the number of guides to include per sliding window as well as the maximum window size (if the tiled deletion generates a 10KB gap it would not make sense to consider the entire region as one score).
+3.2.2 **Sliding Window**. To combine guide scores using a sliding window as in [Fulco et al. 2016](https://www.ncbi.nlm.nih.gov/pubmed/27708057) or [Simeonov et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/28854172), specify the number of guides to include per sliding window as well as the maximum window size (if the tiled deletion generates a 10KB gap it would not make sense to consider the entire region as one score).
 ```r
 analysis.specs$postScoreSlidingWindow <- TRUE
 analysis.specs$guidePerSlidingWindow <- 15
