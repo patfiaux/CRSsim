@@ -332,7 +332,7 @@ analyze_data('Example_performanceEval_specs.txt')
 
 ## 3.1 Advanced Simulations
 
-3.1.1 **Generate guides and their targets**. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`stepSize`).  
+3.1.1 **Generate guides and their targets**. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`deletionSize`).  
 
 Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualCRISPR`
 
@@ -388,8 +388,8 @@ This also applies for `guideShape1` and `guideShape2`.
 ```r
 hist(rbeta(10000, shape1 = 8, shape2 = 1))  # randomly generate 10000 instances of the beta distribution
 
-sim.flags$guideEfficiency <- 'high'
-sim.flags$enhancerStrenth <- 'high'
+sim.flags$guideEfficiency <- 'medium'
+sim.flags$enhancerStrenth <- 'medium'
 
 # the above is equivalent to what's below
 sim.flags$enhancerShape1 <- 5
