@@ -334,9 +334,9 @@ analyze_data('Example_performanceEval_specs.txt')
 
 3.1.1 **Generate guides and their targets**. Both single-guide as well as dual-guide screens can be simulated. For both of them, the number of guides (`nrGuides`) must be specified, as well as the screen system (`crisprSystem`) and the step size between guides (`stepSize`). Additionally, if a dual CRISPR screen is selected, the deletion size must be specified (`deletionSize`).  
 
-Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `Cas9` and `dualCRISPR`
+Possible `crisprSystem` options include: `CRISPRi`, `CRISPRa`, `CRISPRcas9` and `dualCRISPR`
 
-If this option is chosen, all guides are abritrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
+If this option is chosen, all guides are arbitrarily chosen to be located on chromosome 1 and ~5% of the guides will be selected to serve as positive controls.
 
 ```r
 sim.flags$nrGuides <- 10000
@@ -350,9 +350,9 @@ sim.flags$deletionSize <- 1000 # only used if $crisprSystem is 'dualCRISPR'
 sim.flags$nrNeg <- 300
 ```
 
-3.1.3 **Generate guide distributions**.The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
+3.1.3 **Generate guide distributions**. The input count distribution for the different replicates can be taken from an existing data set. It is also possible to generalize existing distributions using the zero-inflated negative binomial distribution (ZINB). The ZINB has both a mean (rate) and a dispersion parameter, as well as a parameter describing the fraction of the distribution originating from the zero mass (eta). Below are the steps to obtain and use the parameters from a ZINB:
 ```r
-# obtain ZINB parameters which descibe the distribution
+# obtain ZINB parameters which describe the distribution
 before.repl1.par <- obtain_ZINB_pars(example.counts$before_repl1)
 example.rate <- before.repl1.par$rate              # rate = 76.5
 example.dispersion <- before.repl1.par$dispersion  # dispersion = 2.6
@@ -366,7 +366,7 @@ before.repl2.simulated <- create_ZINB_shape(10000, example.eta, example.rate, ex
 sim.flags$inputGuideDistr <- cbind(before_1 = before.repl1.simulated, before_2 = before.repl2.simulated)
 ```  
 
-3.1.4 **Set effect range**. Currently, four different CRISPR systems can be simulated: CRISPRi, CRISPRa, Cas9, and dualCRISPR.
+3.1.4 **Set effect range**. Currently, four different CRISPR systems can be simulated: `CRISPRi`, `CRISPRa`, `CRISPRcas9`, and `dualCRISPR`.
 By default, CRISPRi and CRISPRa are assumed to have an effect range of 1kb and Cas9 of 20bp. However, it is also possible to manually set this range with the `crisprEffectRange` flag.
 For dualCRISPR, the effect range is equivalent to the deletion size. The deletion size introduced by two guides must be represented by 'start' set as the target site of guide 1 and 'end' as the target site of guide 2. Use the `deletionSize` flag when using `dualCRISPR`.
 ```r
@@ -475,7 +475,7 @@ If guides are directly provided by the user, the .csv file should have columns f
 | chr8 | 128703539 | 128703559 |
 
 ### 4.1.2 Simulation exons
-If guide targets are provided for the simulations, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the loaction of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. All chromosome are given as a string. For `chrom` the spelling of the individual chromosomes not matter as long as the same chromosome has the same spelling ('chr8' and 'Chr8' will be recognized as two different chromosomes). `start` and `end` values are given as numbers. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
+If guide targets are provided for the simulations, then the marker gene of interest should also be provided. This assumes that some of the guides provided are targeting the gene of interest and can serve as positive controls. The input should be a string to the location of a .csv file containing the chromosome, start, and end sites of all exons of the gene of interest. The column names of this data frame should be `chrom`, `start`, and `end`. All chromosome are given as a string. For `chrom` the spelling of the individual chromosomes not matter as long as the same chromosome has the same spelling ('chr8' and 'Chr8' will be recognized as two different chromosomes). `start` and `end` values are given as numbers. Here, we supply the exon information from `../Example_data/Example_gene.csv`.
 
 | chrom | start | end |
 |----------|----------|----------|
@@ -484,7 +484,7 @@ If guide targets are provided for the simulations, then the marker gene of inter
 | chr8 | 128752641 | 128753680 |
 
 ### 4.1.3 Guide counts for simulated guide distributions
-The input for `inputGuideDistr` is a data frame object and each column will be used to generate the guide count dirstribution for a replicate. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
+The input for `inputGuideDistr` is a data frame object and each column will be used to generate the guide count distribution for a replicate. Here, we supply the guide distribution data from `../Example_data/Example_selectionScreen_counts.csv`. Specifically, we use the guide counts from the 'before' pools. 
 ```r
 example.counts <- read.csv('../Example_data/Example_selectionScreen_counts.csv', stringsAsFactors = F)
 
@@ -505,7 +505,7 @@ In the case above, `inputGuideDistr` looks like the following:
 ## 4.2 analysis and performance evaluation
 
 ### 4.2.1 Guide count file
-The guide count file provided for analysis is a .csv file, where each column is a pool and each row the counts from a guide in a given pool (without guide names). The rows must match the guide information file (see below) such that guide in row 1 is the same across both files. The file should have a header, but the column nmaes do not matter. Top of example guide count file: Example_simulation_counts.csv
+The guide count file provided for analysis is a .csv file, where each column is a pool and each row the counts from a guide in a given pool (without guide names). The rows must match the guide information file (see below) such that guide in row 1 is the same across both files. The file should have a header, but the column names do not matter. Top of example guide count file: Example_simulation_counts.csv
 
 | repl1_before	| repl1_after	| repl2_before	| repl2_after |
 |----------|----------|----------|----------|
