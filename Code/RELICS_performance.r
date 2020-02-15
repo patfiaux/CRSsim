@@ -989,7 +989,7 @@ evaluate_multi_simulations <- function(spec.file = NULL, score.file = NULL, labe
       combined.region.prAUC <- rbind(combined.region.prAUC, region.prAUC.sim)
     }
 
-    if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs.names$evaluate_perElement_Performance){
+    if('evaluate_perElement_Performance' %in% analysis.specs.names && analysis.specs.names$evaluate_perElement_Performance){
       print('Evaluate performance ...')
       element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
       element.prAUC.sim <- cbind(element.prAUC, rep(paste0('sim',sim), nrow(element.prAUC)))
@@ -1086,7 +1086,7 @@ analyze_data <- function(spec.file = NULL, label.file = NULL, data.dir = NULL){
     region.prAUC <- performanceEvaluation_perRegion_recording(final.score.list, analysis.specs)
   }
 
-  if('evaluate_perElement_Performance' %in% analysis.specs.names & analysis.specs$evaluate_perElement_Performance){
+  if('evaluate_perElement_Performance' %in% analysis.specs.names && analysis.specs$evaluate_perElement_Performance){
     print('Evaluate performance ...')
     element.prAUC <- performanceEvaluation_perElement_recording(final.score.list, analysis.specs)
     write.csv(element.prAUC, file = paste0(analysis.specs$dataName, '_perElement_method_eval.csv'), row.names = F )
@@ -2244,7 +2244,7 @@ RELICS_genomeScoring <- function(input.df, input.specs, analysis.name){
       # temp.targeting.window.scores <- temp.score.list$out_df
       # targeting.window.scores <- score_regions(sorted.targeting.chrom,
       #   input.specs$labelHierarchy, score.regions)
-      targeting.window.scores <- score_regions(sorted.targeting.chrom,
+      temp.targeting.window.scores <- score_regions(sorted.targeting.chrom,
         input.specs$labelHierarchy, scoring.type)
       # avg.overlaps <- c(avg.overlaps, temp.score.list$avg_overlaps)
       targeting.window.scores <- rbind(targeting.window.scores, temp.targeting.window.scores)
@@ -2489,7 +2489,7 @@ RELICS_genomeScoring_weighted <- function(input.df, input.specs, analysis.name){
       # temp.targeting.window.scores <- temp.score.list$out_df
       # targeting.window.scores <- score_regions(sorted.targeting.chrom,
       #   input.specs$labelHierarchy, score.regions)
-      targeting.window.scores <- score_regions_weighted(sorted.targeting.chrom,
+      temp.targeting.window.scores <- score_regions_weighted(sorted.targeting.chrom,
         input.specs$labelHierarchy, scoring.type)
       # avg.overlaps <- c(avg.overlaps, temp.score.list$avg_overlaps)
       targeting.window.scores <- rbind(targeting.window.scores, temp.targeting.window.scores)
