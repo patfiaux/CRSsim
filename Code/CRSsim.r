@@ -285,8 +285,9 @@ simulate_data <- function(input.list){
       }
     }
 
-
     temp.sim <- full_replicate_simulation_sepDistrSampl(input.list, updated.info, sim)
+    
+    browser()
 
     write.csv(temp.sim$counts, file = paste0(input.list$outDir, input.list$simName,'/',
       input.list$simName, '_sim', sim, '_counts.csv'), row.names = F)
@@ -311,6 +312,10 @@ simulate_data <- function(input.list){
       final.info$end[random.neg[i]] <- NA
       final.info$label[random.neg[i]] <- 'neg'
     }
+    
+    final.info$guideEfficiency <- temp.sim$guide_efficiencies
+
+    
     # final.info[random.neg, c(1:4)] <- data.frame(NA, NA, NA, 'neg', stringsAsFactors = F)
     write.csv(final.info, file = paste0(input.list$outDir, input.list$simName,'/',
       input.list$simName, '_sim', sim, '_info.csv'), row.names = F)
@@ -444,7 +449,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
         temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
         temp.nonFunctional.cells <- temp.cells.with.guide - temp.functional.cells
 
-        if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame)){
+        if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame))
           temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff # + input.frame$posSortingFrequency
         } else {
           temp.functional.sorting.prob <- effect.diff + input.frame$negSortingFrequency
@@ -499,7 +504,7 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
           temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
           temp.nonFunctional.cells <- temp.cells.with.guide - temp.functional.cells
 
-          if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame)){
+          if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame))
             temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff * sort.factor[k] # + input.frame$posSortingFrequency
             # temp.functional.sorting.prob <- sort.factor[k] * effect.diff + input.frame$posSortingFrequency
           } else {
@@ -538,14 +543,14 @@ full_replicate_simulation_sepDistrSampl <- function(input.frame, input.info, sim
       input.frame$pcrDupl, input.frame$seqDepth[[i]])
 
     repl.sequenced.filtered <- repl.sequenced
-    if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame)){
+    if(input.frame$screenType == 'selectionScreen'){ #'selectionScreen' %in% names(input.frame))
       repl.sequenced.filtered <- repl.sequenced[,c(1,2)]
     }
 
     colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
     out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
   }
-  return(list(counts = out.sim.data, enhancerStrength = sort.factor))
+  return(list(counts = out.sim.data, enhancerStrength = sort.factor, guide_efficiencies = all.guide.efficiencies))
 }
 
 # deprecated: did not record guide efficiency
