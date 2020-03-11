@@ -287,8 +287,6 @@ simulate_data <- function(input.list){
 
     temp.sim <- full_replicate_simulation_sepDistrSampl(input.list, updated.info, sim)
     
-    browser()
-
     write.csv(temp.sim$counts, file = paste0(input.list$outDir, input.list$simName,'/',
       input.list$simName, '_sim', sim, '_counts.csv'), row.names = F)
 
