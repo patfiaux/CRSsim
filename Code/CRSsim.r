@@ -147,6 +147,9 @@ set_default_flags <- function(input.list){
     } else if(out.list$enhancerStrength == 'low'){
       out.list$enhancerShape1 <- 2
       out.list$enhancerShape2 <- 7
+    } else if(out.list$enhancerStrength == 'random'){
+      out.list$enhancerShape1 <- 1
+      out.list$enhancerShape2 <- 1
     } else{
       print('Error: please specify valid enhancerStrength (high, medium, low)')
       break()
@@ -162,7 +165,10 @@ set_default_flags <- function(input.list){
     } else if(out.list$guideEfficiency == 'low'){
       out.list$guideShape1 <- 2
       out.list$guideShape2 <- 7
-    } else{
+    } else if(out.list$guideEfficiency == 'random'){
+      out.list$guideShape1 <- 1
+      out.list$guideShape2 <- 1
+    } else {
       print('Error: please specify valid guideEfficiency (high, medium, low)')
       break()
     }
