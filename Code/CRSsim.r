@@ -309,19 +309,7 @@ simulate_data_v2 <- function(input.list){
   
   input.list <- set_default_flags(input.list)
   
-  updated.info <- input.list$guides
-  
-  if(input.list$areaOfEffect_type == 'normal'){
-    if(! 'sgTarget' %in% names(updated.info)){
-      updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
-    }
-    updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
-    updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
-    
-  } else {
-    updated.info$start <- updated.info$start - input.list$crisprEffectRange
-    updated.info$end <- updated.info$end + input.list$crisprEffectRange
-  }
+  updated.info <- format_guide_info(input.list$guides, input.list)
   
   dir.create(file.path(paste0(input.list$outDir, input.list$simName)))
   
@@ -342,7 +330,14 @@ simulate_data_v2 <- function(input.list){
       }
     }
     
-    temp.sim <- full_replicate_simulation_sepDistrSampl_v2(input.list, updated.info, sim)
+    temp.sim <- c()
+      
+    if(input.list$crisprSystem %in% c('CRISPRi', 'CRISPRa', 'Cas9')){
+      temp.sim <- single_guide_replicate_simulation(input.list, updated.info, sim)
+    } else if(input.list$crisprSystem %in% c('dualCRISPR')){
+      temp.sim <- paired_guide_replicate_simulation(input.list, updated.info, sim)
+    }
+    
     
     write.csv(temp.sim$counts, file = paste0(input.list$outDir, input.list$simName,'/',
                                              input.list$simName, '_sim', sim, '_counts.csv'), row.names = F)
@@ -381,6 +376,130 @@ simulate_data_v2 <- function(input.list){
                                         input.list$simName, '_sim', sim, '_info.csv'), row.names = F)
   }
 }
+
+
+#' @title adjust the info file (accounting for single or paired guide design)
+#' @param input.frame: list containing all the necessary parameters: $posSortingFrequency, $negSortingFrequency, if dualCRISPR: $deletionSize
+#' @param input.info: info file
+#' @param sim.nr: which simulation number
+#' @return list: counts, enhancerStrength, guide_efficiencies
+#' @export format_guide_info()
+
+format_guide_info <- function(input.info, input.list){
+  
+  updated.info <- input.info
+  
+ # account for single or paired guide design
+  # paired guides are already spaced apart (ex. 1kb)
+  if(input.list$crisprSystem %in% c('dualCRISPR')){
+    
+    if(input.list$areaOfEffect_type == 'normal'){
+      if(! 'sgTarget_1' %in% names(updated.info)){
+        updated.info$sgTarget_1 <- updated.info$start
+      }
+      if(! 'sgTarget_2' %in% names(updated.info)){
+        updated.info$sgTarget_2 <- updated.info$end
+      }
+      
+    } else {
+      updated.info$start <- updated.info$start - input.list$crisprEffectRange
+      updated.info$end <- updated.info$end + input.list$crisprEffectRange
+    }
+    
+  } else {
+    
+    if(input.list$areaOfEffect_type == 'normal'){
+      if(! 'sgTarget' %in% names(updated.info)){
+        updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
+      }
+      updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
+      updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
+      
+    } else {
+      updated.info$start <- updated.info$start - input.list$crisprEffectRange
+      updated.info$end <- updated.info$end + input.list$crisprEffectRange
+    }
+    
+  }
+  
+  return(updated.info)
+}
+
+
+#' @title give guides different sorting probabilities based on overlaps with functional sequences
+#' @param input.frame: list containing all the necessary parameters: $posSortingFrequency, $negSortingFrequency, if dualCRISPR: $deletionSize
+#' @param input.info: info file
+#' @param sim.nr: which simulation number
+#' @return list: counts, enhancerStrength, guide_efficiencies
+#' @export paired_guide_replicate_simulation()
+
+# give different genomic properties different sorting probabilities
+# this method samples from either the null sorting distrubuton or samples
+# from an enhancer-strength distribution
+# x% of guides have an enhancer effect, remaining guides have no effect
+# this implementation also records the guide efficiency
+paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
+  
+  out.sim.data <- c()
+  
+  guide.ranges <- GRanges(seqnames = input.info$chrom,
+                          ranges = IRanges(input.info$start, input.info$end))
+  
+  
+  effect.diff <- c()
+  if(input.frame$screenType == 'selectionScreen'){
+    effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
+  } else {
+    effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
+  }
+  
+  sort.factor <- rbeta(nrow(input.frame$enhancer), shape1 = input.frame$enhancerShape1, shape2 = input.frame$enhancerShape2)
+  all.guide.efficiencies <- rbeta(nrow(input.info), shape1 = input.frame$guideShape1, shape2 = input.frame$guideShape2)
+  
+  # for the number of replicates
+  for(i in 1:length(input.frame$inputPools)){
+    print(paste0('Generating replicate ', i))
+    # add counts, assuming negative sorting probabilities
+    temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
+                                 input.frame$negSortingFrequency)
+    if(length(which(is.na(temp.sort.prob))) > 0){
+      temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
+      temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
+      temp.sort.prob[which(is.na(temp.sort.prob[,1])),] <- temp.fill.values
+    }
+    repl.counts <- counts_from_probs(temp.sort.prob, input.frame$inputPools[[i]])
+    
+    
+    # adjust counts of guides overlapping functional sequences
+    if(input.frame$areaOfEffect_type == 'uniform'){
+      repl.counts <- compute_uniform_exon_overlap(input.frame, effect.diff, 
+                                                  repl.counts, guide.ranges, all.guide.efficiencies,
+                                                  input.frame$inputPools[[i]])
+      
+      repl.counts <- compute_uniform_enhancer_overlap(input.frame, effect.diff, 
+                                                      repl.counts, guide.ranges, all.guide.efficiencies,
+                                                      input.frame$inputPools[[i]], sort.factor)
+      
+    } else if(input.frame$areaOfEffect_type == 'normal'){
+      repl.counts <- compute_normal_areaOfEffect(input.frame, effect.diff, 
+                                                 repl.counts, guide.ranges, all.guide.efficiencies,
+                                                 input.info, sort.factor, input.frame$inputPools[[i]])
+    }
+    
+    repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
+                                            input.frame$pcrDupl, input.frame$seqDepth[[i]])
+    
+    repl.sequenced.filtered <- repl.sequenced
+    if(input.frame$screenType == 'selectionScreen'){ 
+      repl.sequenced.filtered <- repl.sequenced[,c(1,2)]
+    }
+    
+    colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
+    out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
+  }
+  return(list(counts = out.sim.data, enhancerStrength = sort.factor, guide_efficiencies = all.guide.efficiencies))
+}
+
 
 
 #' @title adjust the counts for guides overlapping exons, use uniform model
@@ -808,19 +927,19 @@ compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts,
 
 }
 
-#' @title give different genomic properties different sorting probabilities
+#' @title give different genomic properties different sorting probabilities, formerly 'full_replicate_simulation_sepDistrSampl_v2'
 #' @param input.frame: list containing all the necessary parameters: $posSortingFrequency, $negSortingFrequency, if dualCRISPR: $deletionSize
 #' @param input.info: info file
 #' @param sim.nr: which simulation number
 #' @return list: counts, enhancerStrength, guide_efficiencies
-#' @export full_replicate_simulation_sepDistrSampl_v2()
+#' @export single_guide_replicate_simulation()
 
 # give different genomic properties different sorting probabilities
 # this method samples from either the null sorting distrubuton or samples
 # from an enhancer-strength distribution
 # x% of guides have an enhancer effect, remaining guides have no effect
 # this implementation also records the guide efficiency
-full_replicate_simulation_sepDistrSampl_v2 <- function(input.frame, input.info, sim.nr){
+single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   out.sim.data <- c()
   
