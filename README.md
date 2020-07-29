@@ -54,11 +54,11 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 ```
 * IRanges
 ``` r 
-BiocManager::install("IRanges", version = "3.8")
+BiocManager::install("IRanges")
 ```
 * GenomicRanges
 ``` r
-BiocManager::install("GenomicRanges", version = "3.8")
+BiocManager::install("GenomicRanges")
 ```
 
 ## 1.2 Simulate a selection screen with sample data
