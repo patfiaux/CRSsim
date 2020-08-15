@@ -350,7 +350,7 @@ simulate_data_v2 <- function(input.list){
                                                input.list$simName, '_sim', sim, '_enhancers.csv'), row.names = F)
     
     write.table(ordered.enhancers, file = paste0(input.list$outDir, input.list$simName,'/',
-                                               input.list$simName, '_sim', sim, '_enhancers.csv'), 
+                                               input.list$simName, '_sim', sim, '_enhancers.bed'), 
                 row.names = F, col.names = F, sep = '\t', quote = F)
     
     
