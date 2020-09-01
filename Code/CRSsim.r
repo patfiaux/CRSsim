@@ -508,7 +508,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
 }
 
 
-#' @title Compute the area of effect using a normal distribution for single guide simulations
+#' @title Compute the area of effect using a normal distribution for paired guide simulations
 #' @param input.frame: list containing all the necessary parameters: $posSortingFrequency, $negSortingFrequency, if dualCRISPR: $deletionSize
 #' @param input.info: info data frame, $chrom, $start, $end
 #' @param effect.diff: difference in dirichlet probabilities between null and alternative
