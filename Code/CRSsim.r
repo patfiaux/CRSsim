@@ -76,6 +76,8 @@ set_default_flags <- function(input.list){
   input.list.names <- names(input.list)
 
   if('guideFile' %in% names(input.list)){
+    
+    # is this equivalent to specifying the regions which each guide is supposed to target and specifying MYC as a positive control?
     out.list$guides <- read.csv(input.list$guideFile, stringsAsFactors = F)
     out.list$exon <- read.csv(input.list$exon, stringsAsFactors = F)
   } else {
@@ -108,8 +110,11 @@ set_default_flags <- function(input.list){
   }
   if(! 'randomizeRepl' %in% input.list.names){
     # in case the correlation between replicates is to be broken
+    # does this remove differences between replicates?
     out.list$randomizeRepl <- 'no'
   }
+  
+  # is this to ensure that the length of the input guide distribution is equal to the length of the guide targets data?
   if(nrow(out.list$inputGuideDistr) != nrow(out.list$guides)){
     if(nrow(out.list$inputGuideDistr) >= nrow(out.list$guides)){
       out.list$inputGuideDistr <- out.list$inputGuideDistr[sample(1:nrow(out.list$inputGuideDistr), size = nrow(out.list$guides)),]
@@ -121,12 +126,18 @@ set_default_flags <- function(input.list){
   if(! 'nrNeg' %in% input.list.names){
     out.list$nrNeg <- 300
   }
+  
+  # What does this flag do?
   if(! 'nrSims' %in% input.list.names){
     out.list$nrSims <- 1
   }
+  
+  # What does this flag do?
   if(! 'inputCellNr' %in% input.list.names){
     out.list$inputCellNr <- rep(50e6, ncol(out.list$inputGuideDistr))
   }
+  
+  # What is the difference between enhancer shape 1 and enhancer shape 2?
   if('enhancerStrength' %in% input.list.names){
     if(out.list$enhancerStrength == 'high'){
       out.list$enhancerShape1 <- 7
@@ -145,6 +156,8 @@ set_default_flags <- function(input.list){
       break()
     }
   }
+  
+  # What is the difference between guide shape 1 and guide shape 2?
   if('guideEfficiency' %in% input.list.names){
     if(out.list$guideEfficiency == 'high'){
       out.list$guideShape1 <- 7
@@ -171,12 +184,16 @@ set_default_flags <- function(input.list){
 
   if(out.list$screenType == 'selectionScreen'){
     # add the second sequencing depth parameter
+    
+    # assumed sequencing depth specified if selectionScreen?
     temp.seq.depth <- out.list$seqDepth
 
+    # does this adjust sequencing depths based on the input guide distribution?
     adj.seq.depth <- lapply(temp.seq.depth, function(x){
       return(c(x, x[length(x)]))
     })
 
+    # What do these sorting frequencies mean?
     out.list$seqDepth <- adj.seq.depth
     if('selectionStrength' %in% input.list.names){
       if(out.list$selectionStrength == 'high'){
@@ -229,6 +246,7 @@ set_default_flags <- function(input.list){
     break()
   }
   
+  # is this the new additions surrounding the area of effect for a guide?
   # type of area of effect. options are 'normal' (default), 'uniform', 'logistic' (need to implement)
   if(! 'areaOfEffect_type' %in% input.list.names){
     out.list$areaOfEffect_type <- 'normal'
@@ -255,6 +273,8 @@ set_default_flags <- function(input.list){
   if(out.list$areaOfEffect_type == 'normal'){
     if(! 'normal_areaOfEffect_sd' %in% input.list.names){
       if(out.list$crisprSystem %in% c('CRISPRi', 'CRISPRa', 'dualCRISPRi', 'dualCRISPRa') ){
+        
+        # how are these default values determined?
         out.list$normal_areaOfEffect_sd <- 170
         if(! 'crisprEffectRange' %in% input.list.names){
           out.list$crisprEffectRange <- 415
@@ -433,10 +453,14 @@ format_guide_info <- function(input.info, input.list){
       if(! 'sgTarget' %in% names(updated.info)){
         updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
       }
+      
+      # How does this differ from the existing guide information file?
       updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
       updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
       
     } else {
+      
+      # Does the guide affect beyond the start and end?
       updated.info$start <- updated.info$start - input.list$crisprEffectRange
       updated.info$end <- updated.info$end + input.list$crisprEffectRange
     }
