@@ -357,6 +357,8 @@ simulate_data_v2 <- function(input.list){
         input.list$inputPools[[paste0('repl',repl)]] <- rmultinom(1, input.list$inputCellNr[repl], 
                                                                   randomized.counts)
       } else {
+        
+        # generating multinomial distribution based on the input guide distribution and number of input cells for given replicate
         input.list$inputPools[[paste0('repl',repl)]] <- rmultinom(1, input.list$inputCellNr[repl], 
                                                                   input.list$inputGuideDistr[, repl])
       }
@@ -1237,12 +1239,15 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   
   effect.diff <- c()
+  
+  # does this lead to vectors like (4, 0)?
   if(input.frame$screenType == 'selectionScreen'){
     effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
   } else {
     effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
   }
 
+  # what does the beta distribution output?
   sort.factor <- rbeta(nrow(input.frame$enhancer), shape1 = input.frame$enhancerShape1, shape2 = input.frame$enhancerShape2)
   all.guide.efficiencies <- rbeta(nrow(input.info), shape1 = input.frame$guideShape1, shape2 = input.frame$guideShape2)
   
@@ -1828,6 +1833,8 @@ full_replicate_simulation <- function(input.frame, input.info, sim.nr){
 
 generate_enhancers <- function(input.list, input.info, input.exon){
   min.start <- min(input.info$start)
+  
+  # Are enhancers allowed outside of this max end?
   max.end <- max(input.info$end) - 1.5 * input.list$enhancerSize
 
   potential.start.pos <- c(min.start:max.end)
@@ -1835,11 +1842,13 @@ generate_enhancers <- function(input.list, input.info, input.exon){
   overlapping.exon <- which(potential.start.pos > (min(input.exon$start)- 1.5 * input.list$enhancerSize) &
     potential.start.pos < (max(input.exon$end) + 1.5 * input.list$enhancerSize) )
 
+  # is this dropping potential enhancers that overlap with the positive controls?
   final.potential.start.pos <- potential.start.pos[ -overlapping.exon]
 
   start.pos <- sample(final.potential.start.pos, input.list$nrEnhancers)
   end.pos <- start.pos + input.list$enhancerSize
 
+  # what does the input.info$chrom[1] do?
   out.enhancers <- data.frame(chrom = rep(input.info$chrom[1], input.list$nrEnhancers),
     start = start.pos, end = end.pos, stringsAsFactors = F)
 
