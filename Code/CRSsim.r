@@ -182,6 +182,9 @@ set_default_flags <- function(input.list){
     break()
   }
 
+  ##################################
+  # ToDo: add seqDepth default flag
+  
   if(out.list$screenType == 'selectionScreen'){
     # add the second sequencing depth parameter
     
@@ -449,21 +452,29 @@ format_guide_info <- function(input.info, input.list){
     
   } else {
     
-    if(input.list$areaOfEffect_type == 'normal'){
-      if(! 'sgTarget' %in% names(updated.info)){
-        updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
-      }
-      
-      # How does this differ from the existing guide information file?
-      updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
-      updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
-      
-    } else {
-      
-      # Does the guide affect beyond the start and end?
-      updated.info$start <- updated.info$start - input.list$crisprEffectRange
-      updated.info$end <- updated.info$end + input.list$crisprEffectRange
+    if(! 'sgTarget' %in% names(updated.info)){
+      updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
     }
+    
+    # How does this differ from the existing guide information file?
+    updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
+    updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
+    
+    # if(input.list$areaOfEffect_type == 'normal'){
+    #   if(! 'sgTarget' %in% names(updated.info)){
+    #     updated.info$sgTarget <- round((updated.info$start + updated.info$end)/2)
+    #   }
+    #   
+    #   # How does this differ from the existing guide information file?
+    #   updated.info$start <- updated.info$sgTarget - input.list$crisprEffectRange
+    #   updated.info$end <- updated.info$sgTarget + input.list$crisprEffectRange
+    #   
+    # } else {
+    #   
+    #   # Does the guide affect beyond the start and end?
+    #   updated.info$start <- updated.info$start - input.list$crisprEffectRange
+    #   updated.info$end <- updated.info$end + input.list$crisprEffectRange
+    # }
     
   }
   
@@ -1239,12 +1250,17 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   for(i in 1:length(input.frame$inputPools)){
     print(paste0('Generating replicate ', i))
     # add counts, assuming negative sorting probabilities
+    
+    # ToDo:
+    # temp.guide.fit # based on radical, vector of length equal to nr. guides
+    # temp.adj.bkg.freq # t(c(1,2) %*% t(c(3,4) ))
+    
     temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
                                  input.frame$negSortingFrequency)
     if(length(which(is.na(temp.sort.prob))) > 0){
       temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
       temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
-      temp.sort.prob[which(is.na(temp.sort.prob[,1])),] <- temp.fill.values
+      temp.sort.prob[temp.nan.rows,] <- temp.fill.values
     }
     repl.counts <- counts_from_probs(temp.sort.prob, input.frame$inputPools[[i]])
     
