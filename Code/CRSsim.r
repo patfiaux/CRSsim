@@ -1260,8 +1260,31 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     # temp.guide.fit # based on radical, vector of length equal to nr. guides
     # temp.adj.bkg.freq # t(c(1,2) %*% t(c(3,4) ))
     
+    # First Step: Divide Negative Sorting Frequency to Obtain Proportions
+    # input.frame$negSortingFrequency <- input.frame$negSortingFrequency / 100
+    #
+    # Second Step: Scale the Negative Sorting Frequencies according to the Radical Fit
+    # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
+    # input.distr <- input.frame$inputPools[[i]]
+    #
+    # Obtain Dispersion for Each Guide and Save in Vector
+    # guide_disp <- c()
+    # for (i in 1:length(input.distr)) {
+    #   radical_disp <- -36.21266742 + -0.03280368 * input.distr[i] + 3.28222794 * sqrt(input.distr[i])
+    #   guide_disp <- c(guide_disp, radical_var)
+    # }
+    # 
+    # temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negSortingFrequency
+    # 
+    # temp.sort.prob <- matrix(0, nrow = length(input.distr), ncol = length(input.frame$negSortingFrequency))
+    # for (i in 1:length(input.distr)) {
+    #   temp.sort.prob[i, ] <- rdirichlet(1, temp.adj.bkg.freq[i, ])
+    # }
+    # 
+    
     temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
                                  input.frame$negSortingFrequency)
+    
     if(length(which(is.na(temp.sort.prob))) > 0){
       temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
       temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
