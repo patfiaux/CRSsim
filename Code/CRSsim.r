@@ -1077,18 +1077,25 @@ generate_dirichlet_probs <- function(input.sorting.prob){
 #' @export compute_normal_counts_directOverl()
 
 compute_normal_counts_directOverl <- function(repl.counts, fs.df, all.guide.efficiencies, screen.type,
-                                  direct.fs.overlaps.list, effect.diff, neg.sort.freq, input.counts){
+                                  direct.fs.overlaps.list, effect.diff, neg.sort.freq, input.counts,
+                                  adj.bkg.freq, adj.fs.freq){
   
   for(i in 1:length(direct.fs.overlaps.list)){
     
     temp.overlaps <- direct.fs.overlaps.list[[i]]
+    guide.idx <- temp.overlaps$queryHits[1]
+    
+    temp.bkg.freq <- adj.bkg.freq[guide.idx, ]
+    temp.fs.freq <- adj.fs.freq[guide.idx, ]
     
     # establish the dirichlet probabilities
     temp.functional.sorting.prob <- c()
     if(screen.type == 'selectionScreen'){
-      temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq -  x}))
+      temp.freq.diff <- temp.bkg.freq - temp.fs.freq
+      temp.functional.sorting.prob <- t(apply(t(temp.freq.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){temp.bkg.freq -  x}))
     } else {
-      temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq +  x}))
+      temp.freq.diff <- temp.fs.freq - temp.bkg.freq
+      temp.functional.sorting.prob <- t(apply(t(temp.freq.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){temp.bkg.freq +  x}))
     }
     
     guide.idx <- temp.overlaps$queryHits[1]
@@ -1177,7 +1184,8 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
 
 compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts, 
                                         guide.ranges, all.guide.efficiencies,
-                                        input.info, sort.factor, input.pool.counts){
+                                        input.info, sort.factor, input.pool.counts,
+                                        adj.bkg.freq, adj.fs.freq){
   
   # combine exons and enhancers into one data frame
   all.enhancers <- input.frame$enhancer
@@ -1200,9 +1208,12 @@ compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts,
   # if multiple overlaps; if exon present use exon,
   # else compute strongest signal based on distance and enhancer strength
   direct.fs.overlaps.list <- split(direct.fs.overlaps, direct.fs.overlaps$queryHits)
+  
+  # started modifying compute_normal_counts_directOverl
   repl.counts <- compute_normal_counts_directOverl(repl.counts, functional.sequences, all.guide.efficiencies, 
                                                    input.frame$screenType, direct.fs.overlaps.list, effect.diff, 
-                                                   input.frame$negSortingFrequency, input.pool.counts)
+                                                   input.frame$negSortingFrequency, input.pool.counts,
+                                                   adj.bkg.freq, adj.fs.freq)
   
   # compute all overlaps
   # identify all guides only indirectly overlapping FS
@@ -1265,20 +1276,25 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     # temp.adj.bkg.freq # t(c(1,2) %*% t(c(3,4) ))
     
     # First Step: Divide Negative Sorting Frequency to Obtain Proportions
-    # input.frame$negSortingFrequency <- input.frame$negSortingFrequency / 100
+    # input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
     #
     # Second Step: Scale the Negative Sorting Frequencies according to the Radical Fit
     # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
     # input.distr <- input.frame$inputPools[[i]]
     #
     # Obtain Dispersion for Each Guide and Save in Vector
-    # guide_disp <- c()
+    # guide_disp <- vector('numeric', length = length(input.distr))
     # for (i in 1:length(input.distr)) {
     #   radical_disp <- -36.21266742 + -0.03280368 * input.distr[i] + 3.28222794 * sqrt(input.distr[i])
-    #   guide_disp <- c(guide_disp, radical_var)
+    #   #guide_disp <- c(guide_disp, radical_var)
+    #   guide_disp[i] <- radical_var
     # }
+    
+    guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
+    
     # 
-    # temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negSortingFrequency
+    # temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negSortingFrequency # t(input.frame$negSortingFrequency %*% t(guide_disp))
+    # temp.adj.fs.freq <- t(t(guide_disp)) %*% input.frame$posSortingFrequency
     # 
     # temp.sort.prob <- matrix(0, nrow = length(input.distr), ncol = length(input.frame$negSortingFrequency))
     # for (i in 1:length(input.distr)) {
@@ -1289,6 +1305,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
                                  input.frame$negSortingFrequency)
     
+    # toDo: need to update NAs with correct dispersions
     if(length(which(is.na(temp.sort.prob))) > 0){
       temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
       temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
@@ -1308,9 +1325,11 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
                                                    input.frame$inputPools[[i]], sort.factor)
       
     } else if(input.frame$areaOfEffect_type == 'normal'){
+      # test this first
       repl.counts <- compute_normal_areaOfEffect(input.frame, effect.diff, 
                                                  repl.counts, guide.ranges, all.guide.efficiencies,
-                                                 input.info, sort.factor, input.frame$inputPools[[i]])
+                                                 input.info, sort.factor, input.frame$inputPools[[i]],
+                                                 temp.adj.bkg.freq, temp.adj.fs.freq)
     }
 
     repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
