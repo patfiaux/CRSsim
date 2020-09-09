@@ -1,5 +1,3 @@
-# Testing Contributions 
-
 suppressPackageStartupMessages(require(MCMCpack))
 suppressPackageStartupMessages(require(transport))
 suppressPackageStartupMessages(require(IRanges))
@@ -181,15 +179,17 @@ set_default_flags <- function(input.list){
     print('No info about screen type. Set screenType to either selectionScreen or FACSscreen')
     break()
   }
-
-  ##################################
-  # ToDo: add seqDepth default flag
   
   if(out.list$screenType == 'selectionScreen'){
     # add the second sequencing depth parameter
     
-    # assumed sequencing depth specified if selectionScreen?
-    temp.seq.depth <- out.list$seqDepth
+    # set seqDepth to default 100
+    temp.seq.depth <- 100
+    
+    # modify seqDepth if given in flags
+    if ('seqDepth' %in% input.list.names) {
+      temp.seq.depth <- out.list$seqDepth
+    }
 
     # does this adjust sequencing depths based on the input guide distribution?
     adj.seq.depth <- lapply(temp.seq.depth, function(x){
