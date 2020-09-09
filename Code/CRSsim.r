@@ -183,12 +183,16 @@ set_default_flags <- function(input.list){
   if(out.list$screenType == 'selectionScreen'){
     # add the second sequencing depth parameter
     
-    # set seqDepth to default 100
-    temp.seq.depth <- 100
+    # # set seqDepth to default 100
+    temp.seq.depth <- c()
     
-    # modify seqDepth if given in flags
-    if ('seqDepth' %in% input.list.names) {
-      temp.seq.depth <- out.list$seqDepth
+    # modify seqDepth to 100 if not given in flags
+    if (! 'seqDepth' %in% input.list.names) {
+      # out.list$seqDepth <- list(c(100,100))
+      temp.seq.depth <- list(repl1 = rep(100 * length(out.list$inputGuideDistr), 2),
+                             repl2 = rep(100 * length(out.list$inputGuideDistr),2) )
+    } else {
+      temp.seq.depth<- out.list$seqDepth
     }
 
     # does this adjust sequencing depths based on the input guide distribution?
