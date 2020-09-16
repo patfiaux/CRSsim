@@ -882,9 +882,11 @@ compute_uniform_exon_overlap <- function(input.frame, effect.diff,
       
       temp.functional.sorting.prob <- c()
       if(input.frame$screenType == 'selectionScreen'){ 
-        temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff
+        temp.functional.sorting.prob <- t(input.frame$negSortingFrequency - matrix(effect.diff))
+        # temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff
       } else {
-        temp.functional.sorting.prob <- effect.diff + input.frame$negSortingFrequency
+        temp.functional.sorting.prob <- t(matrix(effect.diff) + input.frame$negSortingFrequency)
+        # temp.functional.sorting.prob <- effect.diff + input.frame$negSortingFrequency
       }
       
       # temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
@@ -958,9 +960,11 @@ compute_uniform_enhancer_overlap <- function(input.frame, effect.diff,
         
         temp.functional.sorting.prob <- c()
         if(input.frame$screenType == 'selectionScreen'){
-          temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff * sort.factor[k]
+          temp.functional.sorting.prob <- t(input.frame$negSortingFrequency - matrix(effect.diff) * sort.factor[k])
+          # temp.functional.sorting.prob <- input.frame$negSortingFrequency - effect.diff * sort.factor[k]
         } else {
-          temp.functional.sorting.prob <- sort.factor[k] * effect.diff + input.frame$negSortingFrequency
+          temp.functional.sorting.prob <- t(sort.factor[k] * matrix(effect.diff) + input.frame$negSortingFrequency)
+          # temp.functional.sorting.prob <- sort.factor[k] * effect.diff + input.frame$negSortingFrequency
         }
         
         # temp.functional.cells <- round(temp.cells.with.guide * temp.guide.efficiency)
