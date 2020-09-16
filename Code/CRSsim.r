@@ -1287,7 +1287,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     # add counts, assuming negative sorting probabilities
     # Divide Negative Sorting Frequency to Obtain Proportions
     input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
-    #input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+    input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
     
     # Scale the Negative Sorting Frequencies according to the Radical Fit
     # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
