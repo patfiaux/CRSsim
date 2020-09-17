@@ -302,6 +302,10 @@ set_default_flags <- function(input.list){
       }
     }
   }
+  
+  if(! 'dispersionType' %in% input.list.names){
+    out.list$dispersionType <- 'radical' # will probably have to be changed
+  }
 
   return(out.list)
 }
@@ -1160,7 +1164,7 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
         temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(adj.bkg.freq - effect.diff * temp.enh.strength))
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(neg.sort.freq - effect.diff * temp.enh.strength) )
       } else {
-        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + adj))
+        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + adj.bkg.freq))
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + neg.sort.freq) )
       }
       
@@ -1284,25 +1288,23 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   for(i in 1:length(input.frame$inputPools)){
     print(paste0('Generating replicate ', i))
     
-    # add counts, assuming negative sorting probabilities
-    # Divide Negative Sorting Frequency to Obtain Proportions
-    input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
-    input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
-    
     # Scale the Negative Sorting Frequencies according to the Radical Fit
     # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
     input.distr <- input.frame$inputPools[[i]]
     
     # Obtain Dispersion for Each Guide and Save in Vector
-    # guide_disp <- vector('numeric', length = length(input.distr))
-    # for (i in 1:length(input.distr)) {
-    #   radical_disp <- -36.21266742 + -0.03280368 * input.distr[i] + 3.28222794 * sqrt(input.distr[i])
-    #   #guide_disp <- c(guide_disp, radical_var)
-    #   guide_disp[i] <- radical_var
-    # }
-    guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
+    guide_disp <- c()
+    if(input.frame$dispersionType == 'independent'){
+      guide_disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
+    } else {
+      guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
+    }
     
-    
+    # add counts, assuming negative sorting probabilities
+    # Divide Negative Sorting Frequency to Obtain Proportions
+    input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
+    input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+
     temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negSortingFrequency 
     # t(input.frame$negSortingFrequency %*% t(guide_disp))
     temp.adj.fs.freq <- t(t(guide_disp)) %*% input.frame$posSortingFrequency
