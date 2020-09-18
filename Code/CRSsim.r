@@ -1305,7 +1305,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       guide_disp <- -1.092370e+02 + -4.259984e-03 * input.distr + 2.139774e+01 * log(input.distr)
       
       # set floor value of 3 for dispersion to avoid negative probabilities
-      guide.disp[guide.disp < 3] <- 3
+      guide_disp[guide_disp < 3] <- 3
     }
     
     # add counts, assuming negative sorting probabilities
