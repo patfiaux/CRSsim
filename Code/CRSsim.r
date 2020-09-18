@@ -1161,10 +1161,10 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
       
       temp.enh.strength <- fs.df$sortFactor[temp.overlaps$subjectHits[o]]
       if(screen.type == 'selectionScreen'){
-        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(adj.bkg.freq - effect.diff * temp.enh.strength))
+        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(adj.bkg.freq[guide.idx, ] - effect.diff * temp.enh.strength))
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(neg.sort.freq - effect.diff * temp.enh.strength) )
       } else {
-        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + adj.bkg.freq))
+        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + adj.bkg.freq[guide.idx, ]))
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + neg.sort.freq) )
       }
       
@@ -1173,8 +1173,8 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
     temp.cells.with.guide <- input.counts[guide.idx]
     temp.guide.efficiency <- all.guide.efficiencies[guide.idx]
     temp.cells.affected <- temp.guide.efficiency * dist.scaling
-    temp.guide.counts <- generate_guide_counts(temp.cell.with.guide, temp.cells.affeced,
-                                               temp.functional.sorting.prob, adj.bkg.freq,
+    temp.guide.counts <- generate_guide_counts(temp.cells.with.guide, temp.cells.affected,
+                                               temp.functional.sorting.prob, adj.bkg.freq[guide.idx, ],
                                                fs.df$sortFactor[temp.overlaps$subjectHits])
     #temp.guide.counts <- generate_guide_counts(temp.cells.with.guide, temp.cells.affected,
     #                                           temp.functional.sorting.prob, neg.sort.freq,
