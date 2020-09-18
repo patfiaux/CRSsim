@@ -1138,8 +1138,8 @@ compute_normal_counts_directOverl <- function(repl.counts, fs.df, all.guide.effi
 #' @export compute_normal_counts_indirectOverl()
 
 compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.efficiencies, screen.type,
-                                              indirect.fs.overlaps.list, effect.diff, neg.sort.freq, input.counts,
-                                              input.info, normal.sd, adj.bkg.freq, adj.fs){
+                                              indirect.fs.overlaps.list, effect.diff, neg.sort.prop, input.counts,
+                                              input.info, normal.sd, adj.bkg.freq, adj.fs, guide.disp){
   
   for(i in 1:length(indirect.fs.overlaps.list)){
     
@@ -1161,10 +1161,10 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
       
       temp.enh.strength <- fs.df$sortFactor[temp.overlaps$subjectHits[o]]
       if(screen.type == 'selectionScreen'){
-        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(adj.bkg.freq[guide.idx, ] - effect.diff * temp.enh.strength))
+        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(neg.sort.prop - effect.diff * temp.enh.strength) * guide.disp[guide.idx])
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(neg.sort.freq - effect.diff * temp.enh.strength) )
       } else {
-        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + adj.bkg.freq[guide.idx, ]))
+        temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + neg.sort.prop) * guide.disp[guide.idx])
         #temp.functional.sorting.prob <- rbind(temp.functional.sorting.prob, t(temp.enh.strength * effect.diff + neg.sort.freq) )
       }
       
@@ -1202,7 +1202,7 @@ compute_normal_counts_indirectOverl <- function(repl.counts, fs.df, all.guide.ef
 compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts, 
                                         guide.ranges, all.guide.efficiencies,
                                         input.info, sort.factor, input.pool.counts,
-                                        adj.bkg.freq, adj.fs.freq){
+                                        adj.bkg.freq, adj.fs.freq, guide.disp){
   
   # combine exons and enhancers into one data frame
   all.enhancers <- input.frame$enhancer
@@ -1243,9 +1243,9 @@ compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts,
   unique.indirect.overlaps.list <- split(indirect.fs.overlaps, indirect.fs.overlaps$queryHits)
   repl.counts <- compute_normal_counts_indirectOverl(repl.counts, functional.sequences, all.guide.efficiencies, 
                                                    input.frame$screenType, unique.indirect.overlaps.list, effect.diff, 
-                                                   input.frame$negSortingFrequency, input.pool.counts,
+                                                   input.frame$negProp, input.pool.counts,
                                                    input.info, input.frame$normal_areaOfEffect_sd,
-                                                   adj.bkg.freq, adj.fs.freq)
+                                                   adj.bkg.freq, adj.fs.freq, guide.disp)
   
   return(repl.counts)
 
@@ -1273,12 +1273,21 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   effect.diff <- c()
   
+  # Divide Negative Sorting Frequency to Obtain Proportions
+  #input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
+  #input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+  input.frame$negProp <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
+  input.frame$posProp <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+  
   # does this lead to vectors like (4, 0)?
   if(input.frame$screenType == 'selectionScreen'){
-    effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
+    # effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
+    effect.diff <- input.frame$negProp - input.frame$posProp
   } else {
-    effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
+    # effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
+    effect.diff <- input.frame$posProp - input.frame$negProp
   }
+  
 
   # what does the beta distribution output?
   sort.factor <- rbeta(nrow(input.frame$enhancer), shape1 = input.frame$enhancerShape1, shape2 = input.frame$enhancerShape2)
@@ -1310,16 +1319,16 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     
     # add counts, assuming negative sorting probabilities
     # Divide Negative Sorting Frequency to Obtain Proportions
-    input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
-    input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+    # input.frame$negSortingFrequency <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
+    # input.frame$posSortingFrequency <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
 
-    temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negSortingFrequency 
+    temp.adj.bkg.freq <- t(t(guide_disp)) %*% input.frame$negProp 
     # t(input.frame$negSortingFrequency %*% t(guide_disp))
-    temp.adj.fs.freq <- t(t(guide_disp)) %*% input.frame$posSortingFrequency
+    temp.adj.fs.freq <- t(t(guide_disp)) %*% input.frame$posProp
     # 
     temp.sort.prob <- matrix(0, nrow = length(input.distr), ncol = length(input.frame$negSortingFrequency))
     for (j in 1:length(input.distr)) {
-       temp.sort.prob[j, ] <- rdirichlet(1, temp.adj.bkg.freq[i, ])
+       temp.sort.prob[j, ] <- rdirichlet(1, temp.adj.bkg.freq[j, ])
     }
     
     #temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
@@ -1349,7 +1358,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       repl.counts <- compute_normal_areaOfEffect(input.frame, effect.diff, 
                                                  repl.counts, guide.ranges, all.guide.efficiencies,
                                                  input.info, sort.factor, input.frame$inputPools[[i]],
-                                                 temp.adj.bkg.freq, temp.adj.fs.freq)
+                                                 temp.adj.bkg.freq, temp.adj.fs.freq, guide_disp)
     }
 
     repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
