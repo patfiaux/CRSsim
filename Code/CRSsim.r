@@ -1230,10 +1230,13 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     } else {
       
       # radical fit
-      #guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
+      # guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
       
-      # exponential fit
-      guide.disp <- -1.092370e+02 + -4.259984e-03 * input.distr + 2.139774e+01 * log(input.distr)
+      # exponential fit with linear term
+      # guide.disp <- -1.092370e+02 + -4.259984e-03 * input.distr + 2.139774e+01 * log(input.distr)
+      
+      # exponential fit without linear term
+      guide.disp <- -89.17911 + 17.78130 * log(input.distr)
       
       # set floor value of 3 for dispersion to avoid negative probabilities
       guide.disp[guide.disp < 3] <- 3
