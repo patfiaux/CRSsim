@@ -481,11 +481,24 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   out.sim.data <- c()
 
+  # effect.diff <- c()
+  # if(input.frame$screenType == 'selectionScreen'){
+  #   effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
+  # } else {
+  #   effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
+  # }
+  # 
   effect.diff <- c()
+  
+  # Divide Negative Sorting Frequency to Obtain Proportions
+  input.frame$negProp <- input.frame$negSortingFrequency / sum(input.frame$negSortingFrequency)
+  input.frame$posProp <- input.frame$posSortingFrequency / sum(input.frame$posSortingFrequency)
+  
+  # does this lead to vectors like (4, 0)?
   if(input.frame$screenType == 'selectionScreen'){
-    effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
+    effect.diff <- input.frame$negProp - input.frame$posProp
   } else {
-    effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
+    effect.diff <- input.frame$posProp - input.frame$negProp
   }
   
   sort.factor <- rbeta(nrow(input.frame$enhancer), shape1 = input.frame$enhancerShape1, shape2 = input.frame$enhancerShape2)
@@ -494,23 +507,57 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   # for the number of replicates
   for(i in 1:length(input.frame$inputPools)){
+    
+    # Scale the Negative Sorting Frequencies according to the Radical Fit
+    # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
+    input.distr <- input.frame$inputPools[[i]]
+    
+    # Obtain Dispersion for Each Guide and Save in Vector
+    guide.disp <- c()
+    if(input.frame$dispersionType == 'independent'){
+      guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
+    } else {
+      
+      # radical fit
+      # guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
+      
+      # exponential fit with linear term
+      # guide.disp <- -1.092370e+02 + -4.259984e-03 * input.distr + 2.139774e+01 * log(input.distr)
+      
+      # exponential fit without linear term
+      guide.disp <- -89.17911 + 17.78130 * log(input.distr)
+      
+      # set floor value of 3 for dispersion to avoid negative probabilities
+      guide.disp[guide.disp < 3] <- 3
+    }
+    
+    # compute the per-guide dirichlet parameters by including the dispersion
+    temp.adj.bkg.freq <- t(t(guide.disp)) %*% input.frame$negProp 
+    temp.adj.fs.freq <- t(t(guide.disp)) %*% input.frame$posProp
+    
+    
     print(paste0('Generating replicate ', i))
     # add counts, assuming negative sorting probabilities
-    temp.sort.prob <- rdirichlet(length(input.frame$inputPools[[i]]),
-                                 input.frame$negSortingFrequency)
+    temp.sort.prob <- matrix(0, nrow = length(input.distr), ncol = length(input.frame$negSortingFrequency))
+    for (j in 1:length(input.distr)) {
+      temp.sort.prob[j, ] <- rdirichlet(1, temp.adj.bkg.freq[j, ])
+    }
+    
     if(length(which(is.na(temp.sort.prob))) > 0){
       temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
       temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
       temp.sort.prob[which(is.na(temp.sort.prob[,1])),] <- temp.fill.values
     }
-    repl.counts <- counts_from_probs(temp.sort.prob, input.frame$inputPools[[i]])
+    
+    repl.counts <- counts_from_probs(temp.sort.prob, input.distr)
     
     # combine both uniform and normal into one function
     repl.counts <- compute_pairedGuide_AoE(input.frame, input.info, effect.diff,
                                            repl.counts, sort.factor, guide.1.efficiencies, 
-                                           guide.2.efficiencies, input.frame$inputPools[[i]])
+                                           guide.2.efficiencies, input.distr,
+                                           temp.adj.bkg.freq, temp.adj.fs.freq, guide.disp)
 
-    repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
+    repl.sequenced <- experiment_sequencing(cbind(input.distr, repl.counts),
                                             input.frame$pcrDupl, input.frame$seqDepth[[i]])
     
     repl.sequenced.filtered <- repl.sequenced
@@ -535,12 +582,16 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
 #' @param guide.1.efficiencies: guide 1 efficiency
 #' @param guide.2.efficiencies: guide 2 efficiency
 #' @param input.pool.counts: counts per cell in the input pool
+#' @param adj.bkg.freq: dirichlet background parameters (including dispersion)
+#' @param adj.fs.freq: dirichlet FS parameters (including dispersion)
+#' @param guide.disp: vector, contains the dispersion for each guide
 #' @return data frame: repl.counts
 #' @export compute_pairedGuide_AoE()
 
 compute_pairedGuide_AoE <- function(input.frame, input.info, effect.diff, 
                                     repl.counts, sort.factor, guide.1.efficiencies, 
-                                    guide.2.efficiencies, input.pool.counts){
+                                    guide.2.efficiencies, input.pool.counts,
+                                    adj.bkg.freq, adj.fs.freq, guide.disp){
   
   out.repl.counts <- repl.counts
   
@@ -575,15 +626,16 @@ compute_pairedGuide_AoE <- function(input.frame, input.info, effect.diff,
     temp.overl.fs <- functional.sequences[unique(temp.overl$subjectHits),, drop = F]
     temp.overl.fs.ordered <- temp.overl.fs[order(temp.overl.fs$sortFactor),]
     
-    temp.guide <- input.info[temp.overl$queryHits[1],,drop = F]
-    temp.g1.efficiency <- guide.1.efficiencies[temp.overl$queryHits[1]]
-    temp.g2.efficiency <- guide.2.efficiencies[temp.overl$queryHits[1]]
+    temp.guide.idx <- temp.overl$queryHits[1]
+    temp.guide <- input.info[temp.guide.idx,,drop = F]
+    temp.g1.efficiency <- guide.1.efficiencies[temp.guide.idx]
+    temp.g2.efficiency <- guide.2.efficiencies[temp.guide.idx]
     temp.bp.prop <- compute_paired_bp_sort_prop(temp.guide, input.frame, temp.g1.efficiency, temp.g2.efficiency)
     temp.bp.prop.ranges <- GRanges(seqnames = temp.bp.prop$chrom,
                                    ranges = IRanges(temp.bp.prop$start, temp.bp.prop$end))
     
     temp.unique.cell.idx <- c()
-    temp.cells.with.guide <- input.pool.counts[temp.overl$queryHits[1]]
+    temp.cells.with.guide <- input.pool.counts[temp.guide.idx]
     
     #   for each regulatory region overlapped
     #     find the overlaps with the bp.prop and use the max()
@@ -607,14 +659,15 @@ compute_pairedGuide_AoE <- function(input.frame, input.info, effect.diff,
       temp.nr.cells.affected <- length(which(! temp.fs.idx %in% temp.unique.cell.idx))
       temp.unique.cell.idx <- unique(c(temp.unique.cell.idx, temp.fs.idx))
       
-      # establish the dirichlet probabilities
       temp.functional.sorting.prob <- c()
       if(input.frame$screenType == 'selectionScreen'){
         # temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq -  x}))
-        temp.functional.sorting.prob <- input.frame$negSortingFrequency - (effect.diff * temp.fs$sortFactor)
+        temp.functional.sorting.prob <- (input.frame$negProp - (effect.diff * temp.fs$sortFactor)) * guide.disp[temp.guide.idx]
+        # temp.functional.sorting.prob <- input.frame$negSortingFrequency - (effect.diff * temp.fs$sortFactor)
       } else {
         # temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq +  x}))
-        temp.functional.sorting.prob <- input.frame$negSortingFrequency + (effect.diff * temp.fs$sortFactor)
+        temp.functional.sorting.prob <- (input.frame$negProp + (effect.diff * temp.fs$sortFactor)) * guide.disp[temp.guide.idx]
+        # temp.functional.sorting.prob <- input.frame$negSortingFrequency + (effect.diff * temp.fs$sortFactor)
       }
       
       temp.functional.sorting.prob.rdir <- generate_dirichlet_probs(temp.functional.sorting.prob)
@@ -628,7 +681,7 @@ compute_pairedGuide_AoE <- function(input.frame, input.info, effect.diff,
     #   combine background and FS counts
     #   update the repl.counts data frame
     nonFunctional.cells <- temp.cells.with.guide - length(temp.unique.cell.idx)
-    nonFunctional.sorting.prob.rdir <- generate_dirichlet_probs(input.frame$negSortingFrequency)
+    nonFunctional.sorting.prob.rdir <- generate_dirichlet_probs(adj.bkg.freq[temp.guide.idx,])
     temp.bkg.counts <- t(rmultinom(1, size = nonFunctional.cells,
                                prob = nonFunctional.sorting.prob.rdir ))
     
@@ -686,141 +739,6 @@ compute_paired_bp_sort_prop <- function(guide.info, input.frame, g1.efficiency, 
     return(out.df)
   }
   
-}
-
-
-#### below is not going to be used!!! toDelete
-#' @title Compute the area of effect using a normal distribution for single guide simulations
-#' @param input.frame: list containing all the necessary parameters: $posSortingFrequency, $negSortingFrequency, if dualCRISPR: $deletionSize
-#' @param effect.diff: difference in dirichlet probabilities between null and alternative
-#' @param repl.counts: data frame wih the null counts of the replicate
-#' @param all.guide.efficiencies: guide efficiencies
-#' @param input.info: info data frame with the sgRNA target coordinates
-#' @param sort.factor: beta distributed fractions of signal strength relative to exons
-#' @param input.pool.counts: counts per cell in the input pool
-#' @return data frame: repl.counts
-#' @export compute_pairedGuide_normal_areaOfEffect()
-
-compute_pairedGuide_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts, 
-                                        g1.efficiencies, g2.efficiencies,
-                                        input.info, sort.factor, input.pool.counts){
-  
-  # combine exons and enhancers into one data frame
-  all.enhancers <- input.frame$enhancer
-  all.enhancers$sortFactor <- sort.factor
-  
-  all.exons <- input.frame$exon
-  all.exons$sortFactor <- 1
-  
-  functional.sequences <- rbind(all.exons, all.enhancers)
-  functional.sequences.ranges <- GRanges(seqnames = functional.sequences$chrom,
-                                         ranges = IRanges(functional.sequences$start, functional.sequences$end))
-  
-  # first identify what guides directly overlap exons and enhancers
-  compute_normal_counts_dualGuide_directOverl()
-  
-  
-  # compute all direct overlaps
-  guide.sgTarget.ranges <- GRanges(seqnames = input.info$chrom,
-                                   ranges = IRanges(input.info$sgTarget, input.info$sgTarget))
-  direct.fs.overlaps <- as.data.frame(findOverlaps(guide.sgTarget.ranges, functional.sequences.ranges, type = 'within'))
-  unique.direct.overlaps <- unique(direct.fs.overlaps$queryHits)
-  
-  # for all direct overlaps, split according to guide
-  # if multiple overlaps; if exon present use exon,
-  # else compute strongest signal based on distance and enhancer strength
-  direct.fs.overlaps.list <- split(direct.fs.overlaps, direct.fs.overlaps$queryHits)
-  repl.counts <- compute_normal_counts_directOverl(repl.counts, functional.sequences, all.guide.efficiencies, 
-                                                   input.frame$screenType, direct.fs.overlaps.list, effect.diff, 
-                                                   input.frame$negSortingFrequency, input.pool.counts)
-  
-  # compute all overlaps
-  # identify all guides only indirectly overlapping FS
-  guide.area.ranges <- GRanges(seqnames = input.info$chrom,
-                               ranges = IRanges(input.info$start, input.info$end))
-  all.fs.overlaps <- as.data.frame(findOverlaps(guide.area.ranges, functional.sequences.ranges, type = 'any'))
-  # unique.all.fs.overlaps <- unique(all.fs.overlaps$queryHits)
-  # unique.indirect.overlaps <- unique.all.fs.overlaps[-match(unique.direct.overlaps, unique.all.fs.overlaps)]
-  indirect.fs.overlaps <- all.fs.overlaps[-match(unique.direct.overlaps, all.fs.overlaps$queryHits),]
-  unique.indirect.overlaps.list <- split(indirect.fs.overlaps, indirect.fs.overlaps$queryHits)
-  repl.counts <- compute_normal_counts_indirectOverl(repl.counts, functional.sequences, all.guide.efficiencies, 
-                                                     input.frame$screenType, unique.indirect.overlaps.list, effect.diff, 
-                                                     input.frame$negSortingFrequency, input.pool.counts,
-                                                     input.info, input.frame$normal_areaOfEffect_sd)
-  
-  return(repl.counts)
-  
-}
-
-
-## toDelete
-#' @title compute the shift in guide counts resulting from directly overlapping a functional sequence
-#' @param repl.counts: data.frame with the counts for current replicate
-#' @param fs.df: functional sequence data.frame: $chrom, $start, $end, $sortFactor
-#' @param all.guide.efficiencies: guide efficiencies
-#' @param screen.type: either 'selectionScreen' or 'FACS'
-#' @param direct.fs.overlaps.list: list, each element is a df, overlaps of guide (queryHits) with fs (subjectHits)
-#' @param effect.diff: difference in dirichlet probabilities between null and alternative
-#' @param neg.sort.freq: sorting probabilities of the background
-#' @param input.counts: counts per cell in the input pool
-#' @return data.frame with the updated counts
-#' @export compute_normal_counts_dualGuide_directOverl()
-
-compute_normal_counts_dualGuide_directOverl <- function(repl.counts, fs.df, g1.efficiencies, g2.efficiencies, 
-                                                        screen.type, input.info,
-                                              direct.fs.overlaps.list, effect.diff, neg.sort.freq, input.counts){
-  
-  guide.sg1.Target.ranges <- GRanges(seqnames = input.info$chrom,
-                                   ranges = IRanges(input.info$sg1_Target, input.info$sg2_Target))
-  guide.sg2.Target.ranges <- GRanges(seqnames = input.info$chrom,
-                                     ranges = IRanges(input.info$sg2_Target, input.info$sg2_Target))
-  
-  g1.direct.fs.overlaps <- as.data.frame(findOverlaps(guide.sg1.Target.ranges, functional.sequences.ranges, type = 'within'))
-  g2.direct.fs.overlaps <- as.data.frame(findOverlaps(guide.sg2.Target.ranges, functional.sequences.ranges, type = 'within'))
-  
-  combined.gOverlaps <- rbind(g1.direct.fs.overlaps, g2.direct.fs.overlaps)
-  
-  combined.gOverlaps.split <- split(combined.gOverlaps, combined.gOverlaps$queryHits)
-  
-  for(i in 1:length(combined.gOverlaps.split)){
-    
-    temp.overlaps <- combined.gOverlaps.split[[i]]
-    
-    
-    
-  }
-  
-  unique.g1.direct.overlaps <- unique(g1.direct.fs.overlaps$queryHits)
-  unique.g2.direct.overlaps <- unique(g2.direct.fs.overlaps$queryHits)
-  
-  
-  
-  # if both guides overlap a region; 
-  #  check which combination of guide efficiency and 
-  
-  for(i in 1:length(direct.fs.overlaps.list)){
-    
-    temp.overlaps <- direct.fs.overlaps.list[[i]]
-    
-    # establish the dirichlet probabilities
-    temp.functional.sorting.prob <- c()
-    if(screen.type == 'selectionScreen'){
-      temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq -  x}))
-    } else {
-      temp.functional.sorting.prob <- t(apply(t(effect.diff %*% t(fs.df$sortFactor[temp.overlaps$subjectHits])), 1, function(x){neg.sort.freq +  x}))
-    }
-    
-    guide.idx <- temp.overlaps$queryHits[1]
-    
-    temp.cells.with.guide <- input.counts[guide.idx]
-    temp.guide.efficiency <- all.guide.efficiencies[guide.idx]
-    temp.guide.counts <- generate_guide_counts(temp.cells.with.guide, temp.guide.efficiency,
-                                               temp.functional.sorting.prob[1,, drop = F], neg.sort.freq)
-    repl.counts[guide.idx,] <- temp.guide.counts
-    
-  }
-  
-  return(repl.counts)
 }
 
 
