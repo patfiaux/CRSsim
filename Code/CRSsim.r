@@ -299,7 +299,12 @@ set_default_flags <- function(input.list){
   }
   
   if(! 'dispersionType' %in% input.list.names){
-    out.list$dispersionType <- 'radical' # will probably have to be changed
+    out.list$dispersionType <- 'exponential' # will probably have to be changed
+  }
+  if(out.list$dispersionType == 'spline'){
+    if(! 'splineModelLoc' %in% input.list.names){
+      out.list$splineModelLoc <- ''
+    }
   }
 
   return(out.list)
@@ -516,7 +521,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     guide.disp <- c()
     if(input.frame$dispersionType == 'independent'){
       guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
-    } else {
+    } else if(input.frame$dispersionType == 'exponential'){
       
       # radical fit
       # guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
@@ -528,6 +533,13 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       guide.disp <- -89.17911 + 17.78130 * log(input.distr)
       
       # set floor value of 3 for dispersion to avoid negative probabilities
+      guide.disp[guide.disp < 3] <- 3
+      
+    } else if(input.frame$dispersionType == 'spline'){
+      disp.model <- readRDS(input.frame$splineModelLoc)
+      total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
+      spline.predict <- predict(disp.model, total.counts.df)
+      guide.disp <- spline.predict
       guide.disp[guide.disp < 3] <- 3
     }
     
@@ -1145,7 +1157,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     guide.disp <- c()
     if(input.frame$dispersionType == 'independent'){
       guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
-    } else {
+    } else if(input.frame$dispersionType == 'exponential'){
       
       # radical fit
       # guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
@@ -1157,6 +1169,13 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       guide.disp <- -89.17911 + 17.78130 * log(input.distr)
       
       # set floor value of 3 for dispersion to avoid negative probabilities
+      guide.disp[guide.disp < 3] <- 3
+
+    } else if(input.frame$dispersionType == 'spline'){
+      disp.model <- readRDS(input.frame$splineModelLoc)
+      total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
+      spline.predict <- predict(disp.model, total.counts.df)
+      guide.disp <- spline.predict
       guide.disp[guide.disp < 3] <- 3
     }
 
