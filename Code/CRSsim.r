@@ -2,6 +2,7 @@ suppressPackageStartupMessages(require(MCMCpack))
 suppressPackageStartupMessages(require(transport))
 suppressPackageStartupMessages(require(IRanges))
 suppressPackageStartupMessages(require(GenomicRanges))
+suppressPackageStartupMessages(require(splines))
 
 total_wasserstein <- function(input.df1, input.df2){
   out.wasserstein <- 0
@@ -538,7 +539,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     } else if(input.frame$dispersionType == 'spline'){
       disp.model <- readRDS(input.frame$splineModelLoc)
       total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
-      spline.predict <- predict(disp.model, total.counts.df)
+      spline.predict <- suppressWarnings(predict(disp.model, total.counts.df))
       guide.disp <- spline.predict
       guide.disp[guide.disp < 3] <- 3
     }
@@ -1154,6 +1155,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     input.distr <- input.frame$inputPools[[i]]
     
     # Obtain Dispersion for Each Guide and Save in Vector
+    print('Computing dispersions')
     guide.disp <- c()
     if(input.frame$dispersionType == 'independent'){
       guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
@@ -1174,7 +1176,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     } else if(input.frame$dispersionType == 'spline'){
       disp.model <- readRDS(input.frame$splineModelLoc)
       total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
-      spline.predict <- predict(disp.model, total.counts.df)
+      spline.predict <- suppressWarnings(predict(disp.model, total.counts.df))
       guide.disp <- spline.predict
       guide.disp[guide.disp < 3] <- 3
     }
@@ -1182,21 +1184,25 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     # compute the per-guide dirichlet parameters by including the dispersion
     temp.adj.bkg.freq <- t(t(guide.disp)) %*% input.frame$negProp 
     temp.adj.fs.freq <- t(t(guide.disp)) %*% input.frame$posProp
-    # 
+    
+    print('Generating sorting probabilities')
     temp.sort.prob <- matrix(0, nrow = length(input.distr), ncol = length(input.frame$negSortingFrequency))
     for (j in 1:length(input.distr)) {
        temp.sort.prob[j, ] <- rdirichlet(1, temp.adj.bkg.freq[j, ])
     }
 
-    # toDo: need to update NAs with correct dispersions
     if(length(which(is.na(temp.sort.prob))) > 0){
+      print('Adjust edge-case probabilities')
       temp.nan.rows <- which(is.na(temp.sort.prob[,1]))
       temp.fill.values <- rep(1 / ncol(temp.sort.prob), ncol(temp.sort.prob))
       temp.sort.prob[temp.nan.rows,] <- temp.fill.values
     }
+    
+    print('Generate intitial counts')
     repl.counts <- counts_from_probs(temp.sort.prob, input.frame$inputPools[[i]])
     
 
+    print('Compute area of effect')
     # adjust counts of guides overlapping functional sequences
     if(input.frame$areaOfEffect_type == 'uniform'){
       repl.counts <- compute_uniform_exon_overlap(input.frame, effect.diff, 
@@ -1215,6 +1221,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
                                                  temp.adj.bkg.freq, temp.adj.fs.freq, guide.disp)
     }
 
+    print('Perform sequencing')
     repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
                                             input.frame$pcrDupl, input.frame$seqDepth[[i]])
     
