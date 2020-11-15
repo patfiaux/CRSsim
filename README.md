@@ -151,7 +151,7 @@ sim.flags$seqDepth <- list(repl1 = repl1.seqDepth, repl2 = repl2.seqDepth)
 sim.flags$pcrDupl <- TRUE
 ```
 12. You must also specify:
-* selection strength: how strong the effect of disrupting the gene of interest is (`high` or `low`).     
+* selection strength: how strong the effect of disrupting the gene of interest is (`very-high`, `high` or `low`).     
 * guide efficiency: what proportion of the guides successfully perturb their targets (`high`, `medium`, or `low`)
 * enhancer strength: how should the enhancer signal is (`high`, `medium`, or `low`)
 
@@ -161,8 +161,15 @@ sim.flags$selectionStrength <- 'high'
 sim.flags$guideEfficiency <- 'medium'
 sim.flags$enhancerStrength <- 'medium'
 ```
-
-13. Run the simulation! :sparkles:
+13. Specify the area of effect (AoE) of guides (for details see section 1.2.4). We recommend using `normal` as this is more likely to reflect the behavior of CRISPR.
+```r
+sim.flags$areaOfEffect_type <- 'normal'
+```
+14. Specify the relationship between counts and dispersion (for details see section 1.2.5). We recommend either `exponential` (this example) or `spline`.
+```r
+sim.flags$dispersionType <- 'exponential'
+```
+15. Run the simulation! :sparkles:
 ```r
 simulate_data(sim.flags)
 ```
@@ -186,6 +193,27 @@ sim.flags$seqDepth <- list(repl1 = rep(nrow(example.counts) * 15, 4),
 
 ## Keep in mind!
 An average guide count of 15 vs. 100 vs. 500 has a major effect on power to detect true signal when everything else is held constant. Make sure to adjust `seqDepth` when changing the number of guides used for simulating the data.
+
+
+## 1.2.4 Specify the area of effect (AoE)
+When CRISPR is directed to disrup a target site, then guide efficiency specifies how likely this disruption is to take place. However, the size of this disruption won't always be the same. For example, the effects of a CRISPRi perturbation can be up to 1kb. However, it's unlikely that every CRISPRi perturbation actually results in the silencing of an entire 1kb region. It's more likely that regions close to the target site have a higher probability of being silenced then sites far away. This can be modeled with a normal distribution. However, for testing purposes it could be beneficial to see what the effects of a uniform effect over the targeted region would be so we also left the option of a `uniform` AoE.
+```r
+sim.flags$areaOfEffect_type <- 'normal' # alternatively 'uniform'
+```
+
+Similarly, in case of a dual-guide experiment (`dualCRISPR`), it's more likely that each guide creates a short InDel instead of deleting the entire region. This is also modeled with a normal AoE for the regions immediately around the target site and a deletion probabilitiy (`deletionProb`) across the entire targeted region. By default,  `deletionProb` is set to 0.2
+```r
+sim.flags$areaOfEffect_type <- 'normal' # alternatively 'uniform'
+sim.flags$deletionProb <- 0.2
+```
+See 3. Advanced flags for details on how to change the range of the AoE.
+
+## 1.2.5 Specify the dispersion type
+For most biological data there is a relationship between guide counts and dispersion (variance). We allow this modelin in CRSsim using either an exponential relationship or splines. CRSsim has suggested distribution parameters for each (exponential parameters from [Fulco et al.](https://science.sciencemag.org/content/354/6313/769/tab-article-info), replicate 2, spline parameters from [Simeonov et al.](https://www.nature.com/articles/nature23875), IL2RA replicate 1). In case of splines, the user can provide a model object for amking the dispersion predictions. Alternatively, the relationship between counts and dispersion can also be removed with an `independent` flag at `dispersionType`.
+```r
+sim.flags$dispersionType <- 'spline' # alternatively 'exponential' or 'uniform'
+sim.flags$splineModelLoc <- 'path-to-CRSsim/Spline_models/IL2RA_r1_df3_splineModel'
+```
 
 # 2. Analyze simulated data and evaluate performance
 After simulating CRISPR screen data, you are ready to analyze it! CRSsim provides a script for analyzing the data using a number of methods and comparing their performance.
@@ -447,6 +475,15 @@ sim.flags$negSortingFrequency <- c(5)
 # '97' is repeated for all pools except the last one
 sim.flags$posSortingFrequency <- c(97, 97, 5) * 0.5
 sim.flags$negSortingFrequency <- c(97, 97, 3) * 0.5
+```
+
+3.1.7 **Area of Effect**
+Under default settings, the `normal` AoE for `Cas9` assumes that 50% of all perturbation happen within 10bp and by 95% within 21bp using a standard deviation of 8.5. In the case of CRISPRi or CRISPRa 50% of the activity is within 200bp from the target site and 95% within 415bp from the target site using a standard deviation of 170.
+To change these settings both the `crisprEffectRange` and the `normal_areaOfEffect_sd` flags have to be adjusted. It's recommended to use the `crisprEffectRange` as the 95% cutoff point.
+```r
+# in the case of CRISPRi or CRISPRa
+sim.flags$normal_areaOfEffect_sd <- 170
+sim.flags$crisprEffectRange <- 415
 ```
 
 ## 3.2 Advanced Analysis and performance evaluation
