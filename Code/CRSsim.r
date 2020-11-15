@@ -527,7 +527,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
     } else if(input.frame$dispersionType == 'exponential'){
 
-      # exponential fit without linear term
+      # exponential fit without linear term (From MYC Repl 2)
       guide.disp <- -89.17911 + 17.78130 * log(input.distr)
       
       # set floor value of 3 for dispersion to avoid negative probabilities
