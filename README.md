@@ -196,12 +196,12 @@ An average guide count of 15 vs. 100 vs. 500 has a major effect on power to dete
 
 
 ## 1.2.4 Specify the area of effect (AoE)
-When CRISPR is directed to disrup a target site, then guide efficiency specifies how likely this disruption is to take place. However, the size of this disruption won't always be the same. For example, the effects of a CRISPRi perturbation can be up to 1kb. However, it's unlikely that every CRISPRi perturbation actually results in the silencing of an entire 1kb region. It's more likely that regions close to the target site have a higher probability of being silenced then sites far away. This can be modeled with a normal distribution. However, for testing purposes it could be beneficial to see what the effects of a uniform effect over the targeted region would be so we also left the option of a `uniform` AoE.
+When CRISPR is directed to disrup a target site, then guide efficiency specifies how likely this disruption is to take place. However, the size of this disruption won't always be the same. For example, the effects of a CRISPRi perturbation can be up to 1kb but it's unlikely that every CRISPRi perturbation actually results in the silencing of an entire 1kb region. It's more likely that regions close to the target site have a higher probability of being silenced then sites far away. This can be modeled with a normal distribution. For comparison we also left the option of a `uniform` AoE.
 ```r
 sim.flags$areaOfEffect_type <- 'normal' # alternatively 'uniform'
 ```
 
-Similarly, in case of a dual-guide experiment (`dualCRISPR`), it's more likely that each guide creates a short InDel instead of deleting the entire region. This is also modeled with a normal AoE for the regions immediately around the target site and a deletion probabilitiy (`deletionProb`) across the entire targeted region. By default,  `deletionProb` is set to 0.2
+Similarly, in case of a dual-guide experiment (`dualCRISPR`), it's more likely that each guide creates a short InDel instead of deleting the entire region. We model this with a normal AoE for the regions immediately around the target site of the two guides as well as a deletion probabilitiy (`deletionProb`) across the entire targeted region. By default,  `deletionProb` is set to 0.2
 ```r
 sim.flags$areaOfEffect_type <- 'normal' # alternatively 'uniform'
 sim.flags$deletionProb <- 0.2
@@ -209,7 +209,7 @@ sim.flags$deletionProb <- 0.2
 See 3. Advanced flags for details on how to change the range of the AoE.
 
 ## 1.2.5 Specify the dispersion type
-For most biological data there is a relationship between guide counts and dispersion (variance). We allow this modelin in CRSsim using either an exponential relationship or splines. CRSsim has suggested distribution parameters for each (exponential parameters from [Fulco et al.](https://science.sciencemag.org/content/354/6313/769/tab-article-info), replicate 2, spline parameters from [Simeonov et al.](https://www.nature.com/articles/nature23875), IL2RA replicate 1). In case of splines, the user can provide a model object for amking the dispersion predictions. Alternatively, the relationship between counts and dispersion can also be removed with an `independent` flag at `dispersionType`.
+For most biological data there's usually a relationship between guide counts and dispersion (variance). CRSsim models this using either an exponential relationship or with splines (functions defined as piecewise polynomials which allows them to have great flexibility). CRSsim has suggested distribution parameters for each (exponential parameters from [Fulco et al.](https://science.sciencemag.org/content/354/6313/769/tab-article-info) replicate 2, spline parameters from [Simeonov et al.](https://www.nature.com/articles/nature23875) IL2RA replicate 1). In case of splines, the user can provide a model object for making the dispersion predictions. Alternatively, the relationship between counts and dispersion can also be removed with an `independent` flag at `dispersionType`.
 ```r
 sim.flags$dispersionType <- 'spline' # alternatively 'exponential' or 'uniform'
 sim.flags$splineModelLoc <- 'path-to-CRSsim/Spline_models/IL2RA_r1_df3_splineModel'
