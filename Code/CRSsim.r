@@ -201,7 +201,10 @@ set_default_flags <- function(input.list){
     # Set default dirichlet parameters
     out.list$seqDepth <- adj.seq.depth
     if('selectionStrength' %in% input.list.names){
-      if(out.list$selectionStrength == 'high'){
+      if(out.list$selectionStrength == 'very-high'){
+        out.list$posSortingFrequency <- c(1, 95)
+        out.list$negSortingFrequency <- c(10, 95)
+      } else if(out.list$selectionStrength == 'high'){
         out.list$posSortingFrequency <- c(1, 95)
         out.list$negSortingFrequency <- c(5, 95)
       } else if(out.list$selectionStrength == 'low'){
@@ -304,7 +307,9 @@ set_default_flags <- function(input.list){
   }
   if(out.list$dispersionType == 'spline'){
     if(! 'splineModelLoc' %in% input.list.names){
-      out.list$splineModelLoc <- ''
+      print("Error: please specify a location for the spline model.")
+      break()
+      # out.list$splineModelLoc <- ''
     }
   }
 
@@ -513,9 +518,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   # for the number of replicates
   for(i in 1:length(input.frame$inputPools)){
-    
-    # Scale the Negative Sorting Frequencies according to the Radical Fit
-    # Dispersion Estimation Coefficients for MYC radical r2: -36.21266742  -0.03280368   3.28222794
+
     input.distr <- input.frame$inputPools[[i]]
     
     # Obtain Dispersion for Each Guide and Save in Vector
@@ -523,13 +526,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     if(input.frame$dispersionType == 'independent'){
       guide.disp <- rep(sum(input.frame$negSortingFrequency), length(input.distr))
     } else if(input.frame$dispersionType == 'exponential'){
-      
-      # radical fit
-      # guide_disp <- -36.21266742 + -0.03280368 * input.distr + 3.28222794 * sqrt(input.distr)
-      
-      # exponential fit with linear term
-      # guide.disp <- -1.092370e+02 + -4.259984e-03 * input.distr + 2.139774e+01 * log(input.distr)
-      
+
       # exponential fit without linear term
       guide.disp <- -89.17911 + 17.78130 * log(input.distr)
       
@@ -541,7 +538,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
       spline.predict <- suppressWarnings(predict(disp.model, total.counts.df))
       guide.disp <- spline.predict
-      guide.disp[guide.disp < 3] <- 3
+      guide.disp[guide.disp < 1] <- 1
     }
     
     # compute the per-guide dirichlet parameters by including the dispersion
