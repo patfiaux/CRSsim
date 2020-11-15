@@ -46,6 +46,10 @@ install.packages('MCMCpack')
 ``` r
 install.packages('transport')
 ```
+* splines
+``` r
+install.packages('splines')
+```
 ### 1.1.2 Bioconductor packages
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
