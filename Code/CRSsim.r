@@ -220,7 +220,10 @@ set_default_flags <- function(input.list){
     }
   } else if(out.list$screenType == 'FACSscreen'){
       if('selectionStrength' %in% input.list.names){
-        if(out.list$selectionStrength == 'high'){
+        if(out.list$selectionStrength == 'very-high'){
+          out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13*2)*0.5
+          out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
+        } else if(out.list$selectionStrength == 'high'){
           out.list$posSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 13)*0.5
           out.list$negSortingFrequency <- c(rep(97, (length(out.list$seqDepth[[1]]) - 2) ), 3)*0.5
         } else if(out.list$selectionStrength == 'low'){
@@ -384,6 +387,8 @@ simulate_data_v2 <- function(input.list){
       temp.sim <- paired_guide_replicate_simulation(input.list, updated.info, sim)
     }
     
+    poo.prop <- as.data.frame(temp.sim$pool_proportions, nrow = 1)
+    colnames(poo.prop) <- c()
     
     write.csv(temp.sim$counts, file = paste0(input.list$outDir, input.list$simName,'/',
                                              input.list$simName, '_sim', sim, '_counts.csv'), row.names = F)
@@ -491,14 +496,8 @@ format_guide_info <- function(input.info, input.list){
 paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   out.sim.data <- c()
+  out.repl.sort.fractions.filt <- c()
 
-  # effect.diff <- c()
-  # if(input.frame$screenType == 'selectionScreen'){
-  #   effect.diff <- input.frame$negSortingFrequency - input.frame$posSortingFrequency
-  # } else {
-  #   effect.diff <- input.frame$posSortingFrequency - input.frame$negSortingFrequency
-  # }
-  # 
   effect.diff <- c()
   
   # Divide Negative Sorting Frequency to Obtain Proportions
@@ -569,17 +568,27 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
 
     repl.sequenced <- experiment_sequencing(cbind(input.distr, repl.counts),
                                             input.frame$pcrDupl, input.frame$seqDepth[[i]])
+    repl.sort.fractions <- colSums(cbind(input.frame$inputPools[[i]], repl.counts)) / sum(colSums(cbind(input.frame$inputPools[[i]], repl.counts)))
     
     repl.sequenced.filtered <- repl.sequenced
+    repl.sort.fractions.filt <- repl.sort.fractions
     if(input.frame$screenType == 'selectionScreen'){ 
       repl.sequenced.filtered <- repl.sequenced[,c(1,2)]
+      repl.sort.fractions.filt <- repl.sort.fractions[c(1,2)]
     }
     
     colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
     out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
+    
+    out.repl.sort.fractions.filt <- c(repl.sort.fractions.filt, repl.sequenced.filtered)
+    
   }
-  return(list(counts = out.sim.data, enhancerStrength = sort.factor, 
-              g1_efficiency = guide.1.efficiencies, g2_efficiency = guide.2.efficiencies))
+  return(list(counts = out.sim.data, 
+              enhancerStrength = sort.factor, 
+              g1_efficiency = guide.1.efficiencies, 
+              g2_efficiency = guide.2.efficiencies,
+              pool_proportions = out.repl.sort.fractions.filt))
+
 }
 
 
@@ -1122,6 +1131,7 @@ compute_normal_areaOfEffect <- function(input.frame, effect.diff, repl.counts,
 single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
   
   out.sim.data <- c()
+  out.repl.sort.fractions.filt <- c()
   
   guide.ranges <- GRanges(seqnames = input.info$chrom,
                           ranges = IRanges(input.info$start, input.info$end))
@@ -1175,7 +1185,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
       total.counts.df <- data.frame(counts = input.distr, stringsAsFactors = F)
       spline.predict <- suppressWarnings(predict(disp.model, total.counts.df))
       guide.disp <- spline.predict
-      guide.disp[guide.disp < 3] <- 3
+      guide.disp[guide.disp < 1] <- 1
     }
 
     # compute the per-guide dirichlet parameters by including the dispersion
@@ -1221,16 +1231,24 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     print('Perform sequencing')
     repl.sequenced <- experiment_sequencing(cbind(input.frame$inputPools[[i]], repl.counts),
                                             input.frame$pcrDupl, input.frame$seqDepth[[i]])
+    repl.sort.fractions <- colSums(cbind(input.frame$inputPools[[i]], repl.counts)) / sum(colSums(cbind(input.frame$inputPools[[i]], repl.counts)))
     
     repl.sequenced.filtered <- repl.sequenced
+    repl.sort.fractions.filt <- repl.sort.fractions
     if(input.frame$screenType == 'selectionScreen'){ 
       repl.sequenced.filtered <- repl.sequenced[,c(1,2)]
+      repl.sort.fractions.filt <- repl.sort.fractions[c(1,2)]
     }
     
     colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
     out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
+    
+    out.repl.sort.fractions.filt <- c(repl.sort.fractions.filt, repl.sequenced.filtered)
   }
-  return(list(counts = out.sim.data, enhancerStrength = sort.factor, guide_efficiencies = all.guide.efficiencies))
+  return(list(counts = out.sim.data, 
+              enhancerStrength = sort.factor, 
+              guide_efficiencies = all.guide.efficiencies,
+              pool_proportions = out.repl.sort.fractions.filt))
 }
 
 
