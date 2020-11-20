@@ -387,8 +387,11 @@ simulate_data_v2 <- function(input.list){
       temp.sim <- paired_guide_replicate_simulation(input.list, updated.info, sim)
     }
     
-    poo.prop <- as.data.frame(temp.sim$pool_proportions, nrow = 1)
-    colnames(poo.prop) <- c()
+    pool.prop <- as.data.frame(t(temp.sim$pool_proportions) )
+    colnames(pool.prop) <- colnames(temp.sim$counts)
+    
+    write.csv(pool.prop, file = paste0(input.list$outDir, input.list$simName,'/',
+                                             input.list$simName, '_sim', sim, '_poolGuideProportion.csv'), row.names = F)
     
     write.csv(temp.sim$counts, file = paste0(input.list$outDir, input.list$simName,'/',
                                              input.list$simName, '_sim', sim, '_counts.csv'), row.names = F)
@@ -580,7 +583,7 @@ paired_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
     out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
     
-    out.repl.sort.fractions.filt <- c(repl.sort.fractions.filt, repl.sequenced.filtered)
+    out.repl.sort.fractions.filt <- c(out.repl.sort.fractions.filt, repl.sort.fractions.filt)
     
   }
   return(list(counts = out.sim.data, 
@@ -1243,7 +1246,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
     colnames(repl.sequenced.filtered) <- paste(paste0('sim', sim.nr, '_repl', i), input.frame$poolNames, sep = '_')
     out.sim.data <- cbind(out.sim.data, repl.sequenced.filtered)
     
-    out.repl.sort.fractions.filt <- c(repl.sort.fractions.filt, repl.sequenced.filtered)
+    out.repl.sort.fractions.filt <- c(out.repl.sort.fractions.filt, repl.sort.fractions.filt)
   }
   return(list(counts = out.sim.data, 
               enhancerStrength = sort.factor, 
