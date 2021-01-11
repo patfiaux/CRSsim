@@ -350,9 +350,9 @@ generate_guide_info <- function(input.list){
 #' @param input.parameter.list: RELICS analysis parameters in list format. Default = NULL
 #' @param record.all.fs: logical, if information of all intermediate FS should be recorded, in addition to the final setof FS
 #' @return $nrSims data.frames, each simulation returns data with info and counts as well as enhancers
-#' @export simulate_data_v2()
+#' @export simulate_data()
 
-simulate_data_v2 <- function(input.list){
+simulate_data <- function(input.list){
   
   input.list <- set_default_flags(input.list)
   
@@ -1256,7 +1256,7 @@ single_guide_replicate_simulation <- function(input.frame, input.info, sim.nr){
 
 
 # this version was used for when the area of effect for guides was assumed to be uniform only
-simulate_data <- function(input.list){
+simulate_data_old <- function(input.list){
 
   input.list <- set_default_flags(input.list)
 
