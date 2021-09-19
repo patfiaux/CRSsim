@@ -168,6 +168,9 @@ set_default_flags <- function(input.list){
     } else if(out.list$guideEfficiency == 'random'){
       out.list$guideShape1 <- 1
       out.list$guideShape2 <- 1
+    } else if(out.list$guideEfficiency == 'high-low'){
+      out.list$guideShape1 <- 0.1
+      out.list$guideShape2 <- 0.1
     } else {
       print('Error: please specify valid guideEfficiency (high, medium, low)')
       break()
